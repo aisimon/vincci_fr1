@@ -51,7 +51,7 @@
             <div class="space-y-2">
                 <div class="flex justify-between items-start">
                     <span class="text-xs font-bold uppercase tracking-wider text-indigo-400">Question</span>
-                    <button onclick="playTTS('question')"
+                    <button onclick="playTTS('question', event)"
                         class="p-2 bg-indigo-50 hover:bg-indigo-100 rounded-full transition-colors text-indigo-600"
                         title="Listen to question">
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
@@ -72,7 +72,7 @@
             <div class="space-y-2">
                 <div class="flex justify-between items-start">
                     <span class="text-xs font-bold uppercase tracking-wider text-emerald-400">Réponse</span>
-                    <button onclick="playTTS('answer')"
+                    <button onclick="playTTS('answer', event)"
                         class="p-2 bg-emerald-50 hover:bg-emerald-100 rounded-full transition-colors text-emerald-600"
                         title="Listen to answer">
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
@@ -201,7 +201,10 @@
         }
 
         // Text to Speech logic
-        function playTTS(type) {
+        function playTTS(type, e) {
+            if (e) {
+                e.stopPropagation();
+            }
             const text = type === 'question' ? cardData[currentIndex].q_fr : cardData[currentIndex].a_fr;
 
             // Clean text of parentheticals for better audio
