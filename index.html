@@ -30,29 +30,29 @@
     </style>
 </head>
 
-<body class="bg-slate-50 min-h-screen flex flex-col items-center justify-center p-4 font-sans text-slate-800">
+<body class="bg-pink-50 min-h-screen flex flex-col items-center justify-center p-4 font-sans text-slate-700">
 
     <div class="text-center mb-8">
-        <h1 class="text-3xl font-bold text-indigo-600 mb-2">French Study Cards</h1>
-        <p class="text-slate-500">Swipe or use arrows to navigate</p>
+        <h1 class="text-3xl font-bold text-pink-600 mb-2">French Study Cards</h1>
+        <p class="text-pink-400">Swipe or use arrows to navigate</p>
     </div>
 
     <!-- Progress Tracker -->
-    <div class="mb-4 text-sm font-medium text-slate-400">
+    <div class="mb-4 text-sm font-medium text-pink-300">
         Card <span id="current-index">1</span> of <span id="total-cards">0</span>
     </div>
 
     <!-- Card Display Area -->
     <div class="card-container relative flex items-center justify-center">
         <div id="card"
-            class="flashcard absolute w-full h-full bg-white rounded-3xl shadow-xl p-8 flex flex-col justify-between border border-slate-100">
+            class="flashcard absolute w-full h-full bg-white rounded-3xl shadow-xl shadow-pink-200/50 p-8 flex flex-col justify-between border border-pink-100">
 
             <!-- Question Section -->
             <div class="space-y-2">
                 <div class="flex justify-between items-start">
-                    <span class="text-xs font-bold uppercase tracking-wider text-indigo-400">Question</span>
+                    <span class="text-xs font-bold uppercase tracking-wider text-pink-400">Question</span>
                     <button onclick="playTTS('question', event)"
-                        class="p-2 bg-indigo-50 hover:bg-indigo-100 rounded-full transition-colors text-indigo-600"
+                        class="p-2 bg-pink-100 hover:bg-pink-200 rounded-full transition-colors text-pink-500"
                         title="Listen to question">
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
                             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -61,19 +61,19 @@
                         </svg>
                     </button>
                 </div>
-                <h2 id="q-fr" class="text-2xl font-semibold leading-tight"></h2>
-                <p id="q-en" class="text-slate-400 italic text-sm"></p>
+                <h2 id="q-fr" class="text-2xl font-semibold leading-tight text-slate-800"></h2>
+                <p id="q-en" class="text-pink-300 italic text-sm"></p>
             </div>
 
             <!-- Divider -->
-            <div class="h-px bg-slate-100 w-full"></div>
+            <div class="h-px bg-pink-100 w-full"></div>
 
             <!-- Answer Section -->
             <div class="space-y-2">
                 <div class="flex justify-between items-start">
-                    <span class="text-xs font-bold uppercase tracking-wider text-emerald-400">Réponse</span>
+                    <span class="text-xs font-bold uppercase tracking-wider text-rose-400">Réponse</span>
                     <button onclick="playTTS('answer', event)"
-                        class="p-2 bg-emerald-50 hover:bg-emerald-100 rounded-full transition-colors text-emerald-600"
+                        class="p-2 bg-rose-100 hover:bg-rose-200 rounded-full transition-colors text-rose-500"
                         title="Listen to answer">
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
                             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -83,7 +83,7 @@
                     </button>
                 </div>
                 <h2 id="a-fr" class="text-xl font-medium text-slate-700"></h2>
-                <p id="a-en" class="text-slate-400 italic text-sm"></p>
+                <p id="a-en" class="text-rose-300 italic text-sm"></p>
             </div>
         </div>
     </div>
@@ -91,7 +91,7 @@
     <!-- Navigation Controls -->
     <div class="mt-10 flex gap-4">
         <button onclick="prevCard()"
-            class="btn-pulse bg-white border border-slate-200 p-4 rounded-2xl shadow-sm hover:bg-slate-50 transition-all">
+            class="btn-pulse bg-white border border-pink-200 p-4 rounded-2xl shadow-sm hover:bg-pink-50 transition-all text-pink-400">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
                 stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <line x1="19" y1="12" x2="5" y2="12"></line>
@@ -99,7 +99,7 @@
             </svg>
         </button>
         <button onclick="nextCard()"
-            class="btn-pulse bg-indigo-600 p-4 rounded-2xl shadow-lg shadow-indigo-200 text-white hover:bg-indigo-700 transition-all">
+            class="btn-pulse bg-pink-500 p-4 rounded-2xl shadow-lg shadow-pink-200 text-white hover:bg-pink-600 transition-all">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
                 stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <line x1="5" y1="12" x2="19" y2="12"></line>
