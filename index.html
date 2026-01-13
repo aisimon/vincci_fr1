@@ -90,7 +90,7 @@
 
     <!-- Navigation Controls -->
     <div class="mt-10 flex gap-4">
-        <button onclick="prevCard()"
+        <button
             class="btn-pulse bg-white border border-pink-200 p-4 rounded-2xl shadow-sm hover:bg-pink-50 transition-all text-pink-400">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
                 stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -98,7 +98,7 @@
                 <polyline points="12 19 5 12 12 5"></polyline>
             </svg>
         </button>
-        <button onclick="nextCard()"
+        <button
             class="btn-pulse bg-pink-500 p-4 rounded-2xl shadow-lg shadow-pink-200 text-white hover:bg-pink-600 transition-all">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
                 stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -230,26 +230,31 @@
 
             cardEl.addEventListener('touchstart', (e) => {
                 startX = e.touches[0].clientX;
+                currentX = startX; // Initialize currentX to startX to prevent 0-based diffs on tap
             }, { passive: true });
 
             cardEl.addEventListener('touchmove', (e) => {
                 currentX = e.touches[0].clientX;
                 const diff = currentX - startX;
                 // Visual feedback during swipe
-                if (Math.abs(diff) < 150) {
+                if (Math.abs(diff) < 200) { // Allow slightly more movement range for visual feedback
                     cardEl.style.transform = `translateX(${diff}px) rotate(${diff * 0.05}deg)`;
                 }
             }, { passive: true });
 
             cardEl.addEventListener('touchend', () => {
                 const diff = currentX - startX;
+
                 if (diff > threshold) {
                     prevCard();
                 } else if (diff < -threshold) {
                     nextCard();
-                } else {
-                    renderCard(); // Reset position
+                } else if (Math.abs(diff) > 0) {
+                    // Reset position if moved but not enough to swap
+                    // Use scale(1) to match the final state of renderCard
+                    cardEl.style.transform = 'scale(1)';
                 }
+
                 startX = 0;
                 currentX = 0;
             });
@@ -259,6 +264,8 @@
                 if (e.key === 'ArrowRight') nextCard();
                 if (e.key === 'ArrowLeft') prevCard();
                 if (e.key === ' ') playTTS('question');
+                if (e.key === 'q') playTTS('question');
+                if (e.key === 'a') playTTS('answer');
             });
         }
 
