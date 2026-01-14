@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>French Flashcards</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600&display=swap');
+        body {
+            font-family: 'Lexend', sans-serif;
+            background-color: #fffbeb; /* amber-50 */
+        }
+        .card-shadow {
+            box-shadow: 0 10px 25px -5px rgba(251, 191, 36, 0.2), 0 8px 10px -6px rgba(251, 191, 36, 0.1);
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col items-center justify-center p-4">
+
+    <!-- App Container -->
+    <div id="app" class="w-full max-w-md bg-orange-50 rounded-3xl p-8 border border-orange-100 card-shadow flex flex-col items-center">
+
+        <!-- Header -->
+        <h1 class="text-amber-900 text-2xl font-semibold mb-2">Flash Français</h1>
+        <p id="counter" class="text-amber-700/60 text-sm mb-8">Card 1 of 31</p>
+
+        <!-- Flash Card Display -->
+        <div class="w-full bg-white rounded-2xl p-10 flex flex-col items-center text-center border-b-4 border-amber-200 min-h-[300px] justify-center transition-all duration-300 transform" id="card-display">
+            <div id="french-text" class="text-4xl font-bold text-amber-900 mb-4 leading-tight">Bonjour</div>
+            <div id="english-text" class="text-lg text-amber-700 font-light opacity-80">Hello / Good morning</div>
+
+            <!-- TTS Button -->
+            <button id="tts-btn" class="mt-8 p-4 bg-orange-100 hover:bg-orange-200 text-orange-600 rounded-full transition-colors active:scale-95">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-volume-2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>
+            </button>
+        </div>
+
+        <!-- Navigation Buttons -->
+        <div class="flex justify-between w-full mt-10 gap-4">
+            <button id="prev-btn" class="flex-1 py-4 bg-amber-100 hover:bg-amber-200 text-amber-800 font-medium rounded-2xl transition-all active:scale-95 disabled:opacity-30 flex items-center justify-center gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-left"><path d="m15 18-6-6 6-6"/></svg>
+                Previous
+            </button>
+            <button id="next-btn" class="flex-1 py-4 bg-orange-500 hover:bg-orange-600 text-white font-medium rounded-2xl shadow-lg shadow-orange-200 transition-all active:scale-95 flex items-center justify-center gap-2">
+                Next
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-right"><path d="m9 18 6-6-6-6"/></svg>
+            </button>
+        </div>
+    </div>
+
+    <!-- Status Toast -->
+    <div id="toast" class="fixed bottom-8 bg-black/80 text-white px-4 py-2 rounded-lg text-sm transition-opacity opacity-0 pointer-events-none">
+        Speaking...
+    </div>
+
+    <script>
+        // --- DATA STRUCTURE ---
+        const flashcards = [
+            { french: "Un", english: "1" },
+            { french: "Deux", english: "2" },
+            { french: "Trois", english: "3" },
+            { french: "Quatre", english: "4" },
+            { french: "Cinq", english: "5" },
+            { french: "Six", english: "6" },
+            { french: "Sept", english: "7" },
+            { french: "Huit", english: "8" },
+            { french: "Neuf", english: "9" },
+            { french: "Dix", english: "10" },
+            { french: "Onze", english: "11" },
+            { french: "Douze", english: "12" },
+            { french: "Treize", english: "13" },
+            { french: "Quatorze", english: "14" },
+            { french: "Quinze", english: "15" },
+            { french: "Seize", english: "16" },
+            { french: "Dix-sept", english: "17" },
+            { french: "Dix-huit", english: "18" },
+            { french: "Dix-neuf", english: "19" },
+            { french: "Vingt", english: "20" },
+            { french: "Vingt et un", english: "21" },
+            { french: "Vingt-deux", english: "22" },
+            { french: "Vingt-trois", english: "23" },
+            { french: "Vingt-quatre", english: "24" },
+            { french: "Vingt-cinq", english: "25" },
+            { french: "Vingt-six", english: "26" },
+            { french: "Vingt-sept", english: "27" },
+            { french: "Vingt-huit", english: "28" },
+            { french: "Vingt-neuf", english: "29" },
+            { french: "Trente", english: "30" },
+            { french: "Trente et un", english: "31" }
+        ];
+
+        let currentIndex = 0;
+        const synth = window.speechSynthesis;
+
+        // --- DOM ELEMENTS ---
+        const frenchDisplay = document.getElementById('french-text');
+        const englishDisplay = document.getElementById('english-text');
+        const counterDisplay = document.getElementById('counter');
+        const prevBtn = document.getElementById('prev-btn');
+        const nextBtn = document.getElementById('next-btn');
+        const ttsBtn = document.getElementById('tts-btn');
+        const toast = document.getElementById('toast');
+        const cardDisplay = document.getElementById('card-display');
+
+        // --- CORE FUNCTIONS ---
+
+        function updateUI() {
+            const card = flashcards[currentIndex];
+
+            // Add fade animation
+            cardDisplay.classList.add('opacity-0', 'translate-y-2');
+
+            setTimeout(() => {
+                frenchDisplay.textContent = card.french;
+                englishDisplay.textContent = card.english;
+                counterDisplay.textContent = `Card ${currentIndex + 1} of ${flashcards.length}`;
+
+                prevBtn.disabled = currentIndex === 0;
+
+                cardDisplay.classList.remove('opacity-0', 'translate-y-2');
+            }, 150);
+        }
+
+        function speakFrench(text) {
+            // Cancel any current speaking
+            if (synth.speaking) {
+                synth.cancel();
+            }
+
+            const utterance = new SpeechSynthesisUtterance(text);
+
+            // Try to find a French voice
+            const voices = synth.getVoices();
+            const frenchVoice = voices.find(v => v.lang.startsWith('fr'));
+
+            if (frenchVoice) {
+                utterance.voice = frenchVoice;
+            }
+
+            utterance.lang = 'fr-FR';
+            utterance.rate = 0.9; // Slightly slower for learning
+
+            utterance.onstart = () => {
+                ttsBtn.classList.add('animate-pulse');
+                showToast("Speaking...");
+            };
+
+            utterance.onend = () => {
+                ttsBtn.classList.remove('animate-pulse');
+                hideToast();
+            };
+
+            utterance.onerror = () => {
+                ttsBtn.classList.remove('animate-pulse');
+                hideToast();
+            };
+
+            synth.speak(utterance);
+        }
+
+        function showToast(msg) {
+            toast.textContent = msg;
+            toast.style.opacity = "1";
+        }
+
+        function hideToast() {
+            toast.style.opacity = "0";
+        }
+
+        // --- EVENT LISTENERS ---
+
+        nextBtn.addEventListener('click', () => {
+            if (currentIndex < flashcards.length - 1) {
+                currentIndex++;
+            } else {
+                currentIndex = 0; // Loop back
+            }
+            updateUI();
+        });
+
+        prevBtn.addEventListener('click', () => {
+            if (currentIndex > 0) {
+                currentIndex--;
+                updateUI();
+            }
+        });
+
+        ttsBtn.addEventListener('click', () => {
+            speakFrench(flashcards[currentIndex].french);
+        });
+
+        // Some browsers require voices to be loaded via an event
+        if (speechSynthesis.onvoiceschanged !== undefined) {
+            speechSynthesis.onvoiceschanged = () => synth.getVoices();
+        }
+
+        // Initialize UI
+        updateUI();
+
+    </script>
+</body>
+</html>
