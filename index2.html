@@ -50,8 +50,13 @@
             </button>
         </div>
 
+        <!-- Quick Links (1-31) -->
+        <div id="quick-links" class="flex flex-wrap gap-2 justify-center mt-8 px-2  overflow-y-auto scrollbar-hide">
+            <!-- Numbers will be injected here -->
+        </div>
+
         <!-- Navigation Buttons -->
-        <div class="flex justify-between w-full mt-10 gap-4">
+        <div class="flex justify-between w-full mt-6 gap-4">
             <button id="prev-btn"
                 class="flex-1 py-4 bg-amber-100 hover:bg-amber-200 text-amber-800 font-medium rounded-2xl transition-all active:scale-95 disabled:opacity-30 flex items-center justify-center gap-2">
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
@@ -127,6 +132,7 @@
         const ttsBtn = document.getElementById('tts-btn');
         const toast = document.getElementById('toast');
         const cardDisplay = document.getElementById('card-display');
+        const quickLinksContainer = document.getElementById('quick-links');
 
         // --- CORE FUNCTIONS ---
 
@@ -135,6 +141,18 @@
 
             // Add fade animation
             cardDisplay.classList.add('opacity-0', 'translate-y-2');
+
+            // Update quick links active state
+            const links = quickLinksContainer.querySelectorAll('button');
+            links.forEach((link, idx) => {
+                if (idx === currentIndex) {
+                    link.classList.remove('bg-white', 'text-amber-800', 'border-amber-100');
+                    link.classList.add('bg-orange-500', 'text-white', 'border-orange-500', 'shadow-md');
+                } else {
+                    link.classList.remove('bg-orange-500', 'text-white', 'border-orange-500', 'shadow-md');
+                    link.classList.add('bg-white', 'text-amber-800', 'border-amber-100');
+                }
+            });
 
             setTimeout(() => {
                 frenchDisplay.textContent = card.french;
@@ -145,6 +163,20 @@
 
                 cardDisplay.classList.remove('opacity-0', 'translate-y-2');
             }, 150);
+        }
+
+        function renderQuickLinks() {
+            quickLinksContainer.innerHTML = '';
+            flashcards.forEach((_, idx) => {
+                const btn = document.createElement('button');
+                btn.textContent = idx + 1;
+                btn.className = `w-8 h-8 flex items-center justify-center rounded-lg border text-xs font-medium transition-all active:scale-95`;
+                btn.addEventListener('click', () => {
+                    currentIndex = idx;
+                    updateUI();
+                });
+                quickLinksContainer.appendChild(btn);
+            });
         }
 
         function speakFrench(text) {
@@ -221,6 +253,7 @@
         }
 
         // Initialize UI
+        renderQuickLinks();
         updateUI();
 
     </script>
