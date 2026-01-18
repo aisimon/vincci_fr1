@@ -119,80 +119,73 @@
 <body class="min-h-screen flex items-center justify-center p-4">
 
     <div id="app" class="w-full max-w-md">
-        <div class="mb-4">
+        <div class="mb-2">
             <a href="index.html"
-                class="text-xs text-slate-500 hover:text-slate-300 transition-colors uppercase tracking-widest font-bold">
+                class="text-[10px] text-slate-500 hover:text-slate-300 transition-colors uppercase tracking-widest font-bold">
                 ← Back to Hub
             </a>
         </div>
-        <!-- Settings Header -->
-        <div class="flex flex-col gap-4 mb-6">
-            <div class="flex gap-4">
-                <div class="flex-1">
-                    <label
-                        class="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-2 px-1">Difficulty</label>
-                    <div class="flex bg-slate-800 p-1 rounded-xl border border-slate-700">
-                        <button id="diff-easy"
-                            class="difficulty-btn flex-1 py-2 text-sm font-bold rounded-lg transition-all text-slate-400">Easy
-                            (9)</button>
-                        <button id="diff-standard"
-                            class="difficulty-btn active flex-1 py-2 text-sm font-bold rounded-lg transition-all text-slate-400">Standard
-                            (25)</button>
-                    </div>
-                </div>
-            </div>
 
-            <div>
-                <label for="mode-select"
-                    class="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-2 px-1">Game Mode</label>
+        <!-- Settings Header -->
+        <div class="flex items-center gap-2 mb-3">
+            <div class="flex-[1.2] flex bg-slate-800 p-1 rounded-xl border border-slate-700 h-10">
+                <button id="diff-easy"
+                    class="difficulty-btn flex-1 text-[10px] font-bold rounded-lg transition-all text-slate-400">EASY
+                    (9)</button>
+                <button id="diff-standard"
+                    class="difficulty-btn active flex-1 text-[10px] font-bold rounded-lg transition-all text-slate-400">STD
+                    (25)</button>
+            </div>
+            <div class="flex-1">
                 <select id="mode-select"
-                    class="w-full bg-slate-800 border border-slate-700 text-white rounded-xl px-4 py-3 font-bold focus:ring-2 focus:ring-blue-500 outline-none transition-all cursor-pointer">
-                    <option value="sequential">Sequential (1, 2, 3...)</option>
-                    <option value="odd">Odd Numbers (1, 3, 5...)</option>
-                    <option value="even">Even Numbers (2, 4, 6...)</option>
-                    <option value="prime">Prime Numbers (2, 3, 5...)</option>
+                    class="w-full h-10 bg-slate-800 border border-slate-700 text-white rounded-xl px-2 text-[10px] font-bold focus:ring-2 focus:ring-blue-500 outline-none transition-all cursor-pointer">
+                    <option value="sequential">SEQUENTIAL</option>
+                    <option value="odd">ODD NUMBERS</option>
+                    <option value="even">EVEN NUMBERS</option>
+                    <option value="prime">PRIMES</option>
                 </select>
             </div>
         </div>
 
         <!-- Header -->
-        <div class="text-center mb-6">
+        <div class="text-center mb-4">
             <h1
-                class="text-4xl font-black bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-emerald-400 mb-1">
+                class="text-3xl font-black bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-emerald-400 mb-0">
                 SPEED NUMBER
             </h1>
-            <p id="mode-description" class="text-slate-400 text-sm">Find numbers in sequence as fast as possible!</p>
+            <p id="mode-description" class="text-slate-500 text-[10px] uppercase font-bold tracking-wider">Find numbers
+                in sequence!</p>
         </div>
 
         <!-- Stats -->
-        <div class="stats-card rounded-2xl p-5 mb-6 flex justify-between items-center">
+        <div class="stats-card rounded-2xl p-3 mb-4 flex justify-between items-center">
             <div>
-                <p class="text-[10px] uppercase tracking-widest text-slate-500 font-bold">Target</p>
-                <p id="next-num" class="text-2xl font-black text-blue-400 leading-tight">--</p>
+                <p class="text-[9px] uppercase tracking-widest text-slate-500 font-bold">Target</p>
+                <p id="next-num" class="text-xl font-black text-blue-400 leading-tight">--</p>
             </div>
             <div class="text-center">
-                <p class="text-[10px] uppercase tracking-widest text-slate-500 font-bold">Time</p>
-                <p id="timer" class="text-3xl font-mono font-bold text-white leading-tight">0.00s</p>
+                <p class="text-[9px] uppercase tracking-widest text-slate-500 font-bold">Time</p>
+                <p id="timer" class="text-2xl font-mono font-bold text-white leading-tight">0.00s</p>
             </div>
             <div class="text-right">
-                <p class="text-[10px] uppercase tracking-widest text-slate-500 font-bold">Best</p>
-                <p id="best-time" class="text-2xl font-bold text-emerald-400 leading-tight">--</p>
+                <p class="text-[9px] uppercase tracking-widest text-slate-500 font-bold">Best</p>
+                <p id="best-time" class="text-xl font-bold text-emerald-400 leading-tight">--</p>
             </div>
         </div>
 
         <!-- Game Board Container -->
         <div class="relative">
             <div id="grid"
-                class="number-grid bg-slate-800/50 p-3 rounded-2xl shadow-2xl border border-slate-700 grid-5">
+                class="number-grid bg-slate-800/50 p-2 rounded-2xl shadow-2xl border border-slate-700 grid-5">
                 <!-- Numbers injected here -->
             </div>
 
             <!-- Overlay for Start and Countdown -->
             <div id="overlay"
                 class="absolute inset-0 z-10 flex flex-col items-center justify-center bg-slate-900/95 rounded-2xl backdrop-blur-md transition-all duration-300">
-                <div id="countdown-display" class="hidden text-8xl font-black text-white mb-4"></div>
+                <div id="countdown-display" class="hidden text-7xl font-black text-white mb-4"></div>
                 <div id="menu-content" class="flex flex-col items-center">
-                    <h2 id="overlay-title" class="text-2xl font-bold mb-4">Ready?</h2>
+                    <h2 id="overlay-title" class="text-xl font-bold mb-4">Ready?</h2>
                     <button id="start-btn"
                         class="px-8 py-4 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-xl shadow-lg shadow-blue-900/40 transition-all hover:scale-105 active:scale-95">
                         START GAME
@@ -202,7 +195,7 @@
         </div>
 
         <!-- Progress Bar -->
-        <div class="w-full bg-slate-800 h-2 rounded-full mt-8 overflow-hidden">
+        <div class="w-full bg-slate-800 h-1.5 rounded-full mt-4 overflow-hidden">
             <div id="progress"
                 class="bg-gradient-to-r from-blue-500 to-emerald-500 h-full w-0 transition-all duration-300"></div>
         </div>
