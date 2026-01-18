@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kids French Dictation Fun</title>
+    <style>
+        :root {
+            --warm-pink: #ff85a2;
+            --soft-pink: #ffb3c1;
+            --warm-orange: #ffb347;
+            --creamy-white: #fffcf2;
+            --text-dark: #5d2e46;
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--creamy-white);
+            color: var(--text-dark);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        #app {
+            width: 90%;
+            max-width: 500px;
+            background: white;
+            padding: 2rem;
+            border-radius: 30px;
+            box-shadow: 0 10px 30px rgba(255, 133, 162, 0.2);
+            text-align: center;
+            position: relative;
+            z-index: 10;
+        }
+
+        h1 {
+            color: var(--warm-pink);
+            font-size: 1.8rem;
+            margin-bottom: 1rem;
+        }
+
+        .screen {
+            display: none;
+        }
+
+        .screen.active {
+            display: block;
+        }
+
+        /* Home Screen */
+        .btn-large {
+            background: linear-gradient(135deg, var(--warm-pink), var(--warm-orange));
+            color: white;
+            border: none;
+            padding: 1.2rem 2rem;
+            font-size: 1.3rem;
+            border-radius: 50px;
+            cursor: pointer;
+            margin: 15px 0;
+            transition: transform 0.2s, box-shadow 0.2s;
+            width: 90%;
+            font-weight: bold;
+        }
+
+        .btn-large:hover {
+            transform: scale(1.03);
+            box-shadow: 0 5px 15px rgba(255, 133, 162, 0.4);
+        }
+
+        .settings-container {
+            margin: 20px 0;
+            padding: 15px;
+            background: #fff0f3;
+            border-radius: 15px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.95rem;
+        }
+
+        /* Toggle Switch */
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 24px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 24px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 16px;
+            width: 16px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked+.slider {
+            background-color: var(--warm-pink);
+        }
+
+        input:checked+.slider:before {
+            transform: translateX(26px);
+        }
+
+        /* Card Style */
+        .card {
+            background-color: var(--soft-pink);
+            border-radius: 20px;
+            padding: 2rem;
+            margin-bottom: 1.5rem;
+            min-height: 160px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+
+        .timer-circle {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            width: 45px;
+            height: 45px;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+            color: var(--warm-pink);
+            border: 3px solid var(--warm-pink);
+            font-size: 1.1rem;
+        }
+
+        .english-hint {
+            font-size: 1.25rem;
+            font-style: italic;
+            margin-bottom: 1rem;
+            color: #7d4461;
+            min-height: 1.5em;
+            font-weight: 500;
+        }
+
+        .audio-btn {
+            background: white;
+            border: none;
+            border-radius: 50%;
+            width: 70px;
+            height: 70px;
+            font-size: 2rem;
+            cursor: pointer;
+            color: var(--warm-pink);
+            margin-bottom: 1.5rem;
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+            transition: background 0.2s;
+        }
+
+        .audio-btn:active {
+            background: #eee;
+        }
+
+        input[type="text"] {
+            width: 90%;
+            padding: 15px;
+            border: 2px solid var(--soft-pink);
+            border-radius: 12px;
+            font-size: 1.2rem;
+            text-align: center;
+            outline: none;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        input[type="text"]:focus {
+            border-color: var(--warm-pink);
+        }
+
+        /* Navigation */
+        .nav-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 1rem;
+        }
+
+        .btn-nav {
+            background: var(--soft-pink);
+            border: none;
+            padding: 12px 24px;
+            border-radius: 15px;
+            cursor: pointer;
+            color: white;
+            font-weight: bold;
+            font-size: 1rem;
+        }
+
+        .btn-pause {
+            background: var(--warm-orange);
+            font-size: 1.5rem;
+            width: 55px;
+            height: 55px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .btn-home-small {
+            position: absolute;
+            top: 10px;
+            left: 20px;
+            background: none;
+            border: none;
+            color: var(--warm-pink);
+            font-size: 1.8rem;
+            cursor: pointer;
+            padding: 5px;
+        }
+
+        /* Results */
+        .results-list {
+            text-align: left;
+            max-height: 280px;
+            overflow-y: auto;
+            margin-bottom: 1.5rem;
+            padding: 15px;
+            border: 2px solid #fff0f3;
+            border-radius: 15px;
+            background: #fafafa;
+        }
+
+        .result-item {
+            margin-bottom: 12px;
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .correct {
+            color: #2e7d32;
+            font-weight: bold;
+        }
+
+        .wrong {
+            color: #c62828;
+            font-weight: bold;
+        }
+
+        /* Fireworks Canvas */
+        #fireworks {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 100;
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+
+    <canvas id="fireworks"></canvas>
+
+    <div id="app">
+        <!-- Home Screen -->
+        <div id="screen-home" class="screen active">
+            <h1>✨ French Dictée ✨</h1>
+
+            <div class="settings-container">
+                <span>Show English Meanings?</span>
+                <label class="switch">
+                    <input type="checkbox" id="toggle-english" checked>
+                    <span class="slider"></span>
+                </label>
+            </div>
+
+            <p>Select your word list:</p>
+            <button class="btn-large" onclick="startDictation(1)">Dictation 1 (é)</button>
+            <button class="btn-large" onclick="startDictation(2)">Dictation 2 (ê)</button>
+        </div>
+
+        <!-- Test Screen -->
+        <div id="screen-test" class="screen">
+            <button class="btn-home-small" onclick="goHome()" title="Quit to Home">🏠</button>
+            <h2 id="dictation-title">Dictation</h2>
+            <div class="card">
+                <div class="timer-circle" id="timer">60</div>
+                <div class="english-hint" id="english-hint">English Meaning</div>
+                <button class="audio-btn" onclick="playCurrentWord()" title="Listen">🔊</button>
+                <input type="text" id="user-input" placeholder="Type what you hear..." autocomplete="off" autofocus>
+            </div>
+
+            <div class="nav-controls">
+                <button class="btn-nav" id="btn-prev" onclick="prevWord()">Prev</button>
+                <button class="btn-nav btn-pause" id="btn-pause" onclick="togglePause()">⏸</button>
+                <button class="btn-nav" id="btn-next" onclick="nextWord()">Next</button>
+            </div>
+            <p id="progress-text" style="font-size: 0.9rem; margin-top: 12px; color: #888;"></p>
+        </div>
+
+        <!-- Finish Screen -->
+        <div id="screen-finish" class="screen">
+            <h1 id="finish-title" style="font-size: 2.2rem; margin-top: 0.5rem;">🎉 Magnifique ! 🎉</h1>
+            <p>Review your awesome work:</p>
+            <div class="results-list" id="results-list"></div>
+            <button class="btn-large" onclick="goHome()">Return to Home Screen</button>
+        </div>
+    </div>
+
+    <script>
+        // Data Structure updated from uploaded images
+        const dictations = {
+            1: [
+                { fr: "Comment ça va ?", en: "How are you (is it going)?" },
+                { fr: "Ça va", en: "I’m ok (it’s going!)" },
+                { fr: "Ça va bien / mal", en: "It’s going good / bad" },
+                { fr: "Je suis fatigué", en: "I am tired" },
+                { fr: "Je suis malade", en: "I am sick" },
+                { fr: "Comme ci, comme ça", en: "So so" }
+            ],
+            2: [
+                { fr: "J'ai", en: "I have" },
+                { fr: "Tu as", en: "You have" },
+                { fr: "Il a", en: "He has" },
+                { fr: "Elle a", en: "She has" },
+                { fr: "On a", en: "We have" },
+                { fr: "Nous avons", en: "We have" },
+                { fr: "Vous avez", en: "You all have" },
+                { fr: "Ils ont", en: "They (masc.) have" },
+                { fr: "Elles ont", en: "They (fem.) have" },
+                { fr: "Je n’ai pas de", en: "I don’t have any" }
+            ]
+        };
+
+        let currentSet = [];
+        let currentIndex = 0;
+        let timer = 60;
+        let timerInterval = null;
+        let isPaused = false;
+        let userAnswers = [];
+        let showEnglish = true;
+        let selectedVoice = null;
+
+        const synth = window.speechSynthesis;
+
+        // Load voices and prioritize a female French voice
+        function loadVoices() {
+            const voices = synth.getVoices();
+            const frenchVoices = voices.filter(v => v.lang.startsWith('fr'));
+
+            // Search for common female voice names in browser TTS engines
+            selectedVoice = frenchVoices.find(v =>
+                v.name.toLowerCase().includes('amelie') ||
+                v.name.toLowerCase().includes('marie') ||
+                v.name.toLowerCase().includes('female') ||
+                v.name.toLowerCase().includes('zira') ||
+                v.name.toLowerCase().includes('google français')
+            ) || frenchVoices[0];
+        }
+
+        if (speechSynthesis.onvoiceschanged !== undefined) {
+            speechSynthesis.onvoiceschanged = loadVoices;
+        }
+        loadVoices();
+
+        function showScreen(screenId) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById(screenId).classList.add('active');
+        }
+
+        function startDictation(num) {
+            showEnglish = document.getElementById('toggle-english').checked;
+            currentSet = dictations[num];
+            currentIndex = 0;
+            isPaused = false;
+            userAnswers = new Array(currentSet.length).fill("");
+            document.getElementById('dictation-title').innerText = num === 1 ? "Dictée 1 (é)" : "Dictée 2 (ê)";
+            document.getElementById('btn-pause').innerText = '⏸';
+            showScreen('screen-test');
+            loadWord();
+            startTimer();
+        }
+
+        function loadWord() {
+            const wordData = currentSet[currentIndex];
+            const hintEl = document.getElementById('english-hint');
+
+            if (showEnglish) {
+                hintEl.innerText = `Meaning: ${wordData.en}`;
+                hintEl.style.visibility = 'visible';
+            } else {
+                hintEl.innerText = '';
+                hintEl.style.visibility = 'hidden';
+            }
+
+            const input = document.getElementById('user-input');
+            input.value = userAnswers[currentIndex] || "";
+            input.focus();
+
+            document.getElementById('progress-text').innerText = `Word ${currentIndex + 1} of ${currentSet.length}`;
+            document.getElementById('btn-prev').disabled = (currentIndex === 0);
+            document.getElementById('btn-next').innerText = (currentIndex === currentSet.length - 1) ? "Finish" : "Next";
+
+            timer = 60;
+            updateTimerDisplay();
+            playCurrentWord();
+        }
+
+        function playCurrentWord() {
+            if (!selectedVoice) loadVoices();
+            const wordData = currentSet[currentIndex];
+            const utter = new SpeechSynthesisUtterance(wordData.fr);
+            if (selectedVoice) {
+                utter.voice = selectedVoice;
+            } else {
+                utter.lang = 'fr-FR';
+            }
+            utter.rate = 0.8;
+            synth.cancel();
+            synth.speak(utter);
+        }
+
+        function startTimer() {
+            clearInterval(timerInterval);
+            timerInterval = setInterval(() => {
+                if (!isPaused) {
+                    timer--;
+                    updateTimerDisplay();
+                    if (timer <= 0) {
+                        saveAnswer();
+                        nextWord();
+                    }
+                }
+            }, 1000);
+        }
+
+        function updateTimerDisplay() {
+            document.getElementById('timer').innerText = timer;
+        }
+
+        function togglePause() {
+            isPaused = !isPaused;
+            const btn = document.getElementById('btn-pause');
+            btn.innerText = isPaused ? '▶' : '⏸';
+            if (isPaused) {
+                synth.cancel();
+            }
+        }
+
+        function saveAnswer() {
+            userAnswers[currentIndex] = document.getElementById('user-input').value;
+        }
+
+        function nextWord() {
+            saveAnswer();
+            if (currentIndex < currentSet.length - 1) {
+                currentIndex++;
+                loadWord();
+            } else {
+                finishTest();
+            }
+        }
+
+        function prevWord() {
+            if (currentIndex > 0) {
+                saveAnswer();
+                currentIndex--;
+                loadWord();
+            }
+        }
+
+        function finishTest() {
+            clearInterval(timerInterval);
+            showScreen('screen-finish');
+            document.getElementById('finish-title').innerText = "Well done!";
+            displayResults();
+            startFireworks();
+
+            // Say "Well done!" cheerfully
+            const utter = new SpeechSynthesisUtterance("Well done!");
+            utter.lang = 'en-US';
+            utter.pitch = 1.2;
+            synth.speak(utter);
+        }
+
+        function displayResults() {
+            const list = document.getElementById('results-list');
+            list.innerHTML = "";
+            currentSet.forEach((item, index) => {
+                const userAns = (userAnswers[index] || "").trim().toLowerCase();
+                const correctAns = item.fr.trim().toLowerCase();
+                const isCorrect = userAns === correctAns;
+
+                const div = document.createElement('div');
+                div.className = "result-item";
+                div.innerHTML = `
+                <strong>${index + 1}. ${item.en}</strong><br>
+                Correct: <span class="correct">${item.fr}</span><br>
+                Yours: <span class="${isCorrect ? 'correct' : 'wrong'}">${userAnswers[index] || "(empty)"}</span>
+            `;
+                list.appendChild(div);
+            });
+        }
+
+        function goHome() {
+            clearInterval(timerInterval);
+            synth.cancel();
+            stopFireworks();
+            showScreen('screen-home');
+        }
+
+        // --- Fireworks Canvas ---
+        const canvas = document.getElementById('fireworks');
+        const ctx = canvas.getContext('2d');
+        let fwActive = false;
+        let particles = [];
+
+        function startFireworks() {
+            canvas.style.display = 'block';
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            fwActive = true;
+            loop();
+        }
+
+        function stopFireworks() {
+            fwActive = false;
+            canvas.style.display = 'none';
+            particles = [];
+        }
+
+        class Particle {
+            constructor(x, y, color) {
+                this.x = x;
+                this.y = y;
+                this.color = color;
+                this.velocity = {
+                    x: (Math.random() - 0.5) * 8,
+                    y: (Math.random() - 0.5) * 8
+                };
+                this.alpha = 1;
+                this.friction = 0.98;
+            }
+            draw() {
+                ctx.globalAlpha = this.alpha;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, 2, 0, Math.PI * 2);
+                ctx.fillStyle = this.color;
+                ctx.fill();
+            }
+            update() {
+                this.velocity.x *= this.friction;
+                this.velocity.y *= this.friction;
+                this.x += this.velocity.x;
+                this.y += this.velocity.y;
+                this.alpha -= 0.01;
+            }
+        }
+
+        function createFirework(x, y) {
+            const colors = ['#ff85a2', '#ffb347', '#ffedcf', '#ffffff', '#ff99cc'];
+            for (let i = 0; i < 50; i++) {
+                particles.push(new Particle(x, y, colors[Math.floor(Math.random() * colors.length)]));
+            }
+        }
+
+        function loop() {
+            if (!fwActive) return;
+            ctx.fillStyle = 'rgba(255, 252, 242, 0.18)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            if (Math.random() < 0.1) {
+                createFirework(Math.random() * canvas.width, Math.random() * (canvas.height * 0.6));
+            }
+
+            particles.forEach((p, i) => {
+                if (p.alpha <= 0) {
+                    particles.splice(i, 1);
+                } else {
+                    p.update();
+                    p.draw();
+                }
+            });
+            requestAnimationFrame(loop);
+        }
+
+        window.addEventListener('resize', () => {
+            if (fwActive) {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+            }
+        });
+
+    </script>
+</body>
+
+</html>

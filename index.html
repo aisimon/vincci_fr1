@@ -3,277 +3,166 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Apprendre le Français - Flashcards</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Vincci's Learning Hub</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
     <style>
-        .card-container {
-            perspective: 1000px;
-            height: 400px;
-            width: 100%;
-            max-width: 450px;
+        body {
+            font-family: 'Outfit', sans-serif;
+            background-color: #f8fafc;
+            /* light slate */
         }
 
-        .flashcard {
-            transition: transform 0.4s ease-out, opacity 0.3s ease;
-            cursor: grab;
-            user-select: none;
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
         }
 
-        .flashcard:active {
-            cursor: grabbing;
-        }
-
-        .btn-pulse:active {
-            transform: scale(0.95);
+        .card-hover:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
         }
     </style>
 </head>
 
-<body class="bg-pink-50 min-h-screen flex flex-col items-center justify-center p-4 font-sans text-slate-700">
+<body class="min-h-screen text-slate-800 bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50">
 
-    <div class="text-center mb-8">
-        <h1 class="text-3xl font-bold text-pink-600 mb-2">French Study Cards</h1>
-        <p class="text-pink-400">Swipe or use arrows to navigate</p>
-    </div>
+    <div class="max-w-4xl mx-auto px-4 py-8 min-h-screen flex flex-col">
 
-    <!-- Progress Tracker -->
-    <div class="mb-4 text-sm font-medium text-pink-300">
-        Card <span id="current-index">1</span> of <span id="total-cards">0</span>
-    </div>
+        <!-- Header -->
+        <header class="text-center mb-10 mt-4">
+            <h1
+                class="text-4xl md:text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-purple-600 mb-3">
+                Vincci's Learning Hub
+            </h1>
+            <p class="text-slate-500 text-lg font-medium">Select an activity to start practicing!</p>
+        </header>
 
-    <!-- Card Display Area -->
-    <div class="card-container relative flex items-center justify-center">
-        <div id="card"
-            class="flashcard absolute w-full h-full bg-white rounded-3xl shadow-xl shadow-pink-200/50 p-8 flex flex-col justify-between border border-pink-100">
+        <!-- Grid Container -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 flex-grow">
 
-            <!-- Question Section -->
-            <div class="space-y-2">
-                <div class="flex justify-between items-start">
-                    <span class="text-xs font-bold uppercase tracking-wider text-pink-400">Question</span>
-                    <button onclick="playTTS('question', event)"
-                        class="p-2 bg-pink-100 hover:bg-pink-200 rounded-full transition-colors text-pink-500"
-                        title="Listen to question">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
-                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M11 5L6 9H2v6h4l5 4V5z"></path>
-                            <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+            <!-- Card 1: Dictation -->
+            <a href="dictation.html" class="group block">
+                <div
+                    class="h-full glass-effect rounded-3xl p-6 transition-all duration-300 card-hover border-b-4 border-pink-400 bg-white/60 hover:bg-white/80">
+                    <div class="flex items-start justify-between mb-4">
+                        <div
+                            class="w-12 h-12 bg-pink-100 rounded-2xl flex items-center justify-center text-2xl shadow-sm group-hover:scale-110 transition-transform">
+                            🎧
+                        </div>
+                        <span
+                            class="bg-pink-100 text-pink-700 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">Spelling</span>
+                    </div>
+                    <h2 class="text-2xl font-bold text-slate-800 mb-2 group-hover:text-pink-600 transition-colors">
+                        French Dictation</h2>
+                    <p class="text-slate-500 leading-relaxed">Practice your French spelling with interactive dictation
+                        exercises. Listen, type, and see fireworks!</p>
+                    <div
+                        class="mt-4 flex items-center text-pink-600 font-semibold group-hover:translate-x-1 transition-transform">
+                        Start Dictation
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-1" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M17 8l4 4m0 0l-4 4m4-4H3" />
                         </svg>
-                    </button>
+                    </div>
                 </div>
-                <h2 id="q-fr" class="text-2xl font-semibold leading-tight text-slate-800"></h2>
-                <p id="q-en" class="text-pink-300 italic text-sm"></p>
-            </div>
+            </a>
 
-            <!-- Divider -->
-            <div class="h-px bg-pink-100 w-full"></div>
-
-            <!-- Answer Section -->
-            <div class="space-y-2">
-                <div class="flex justify-between items-start">
-                    <span class="text-xs font-bold uppercase tracking-wider text-rose-400">Réponse</span>
-                    <button onclick="playTTS('answer', event)"
-                        class="p-2 bg-rose-100 hover:bg-rose-200 rounded-full transition-colors text-rose-500"
-                        title="Listen to answer">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
-                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M11 5L6 9H2v6h4l5 4V5z"></path>
-                            <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+            <!-- Card 2: Flashcards (Conversation) -->
+            <a href="index3.html" class="group block">
+                <div
+                    class="h-full glass-effect rounded-3xl p-6 transition-all duration-300 card-hover border-b-4 border-indigo-400 bg-white/60 hover:bg-white/80">
+                    <div class="flex items-start justify-between mb-4">
+                        <div
+                            class="w-12 h-12 bg-indigo-100 rounded-2xl flex items-center justify-center text-2xl shadow-sm group-hover:scale-110 transition-transform">
+                            🗣️
+                        </div>
+                        <span
+                            class="bg-indigo-100 text-indigo-700 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">Speaking</span>
+                    </div>
+                    <h2 class="text-2xl font-bold text-slate-800 mb-2 group-hover:text-indigo-600 transition-colors">
+                        Study Cards</h2>
+                    <p class="text-slate-500 leading-relaxed">Learn conversational French phrases. Swipe through
+                        questions and answers with audio support.</p>
+                    <div
+                        class="mt-4 flex items-center text-indigo-600 font-semibold group-hover:translate-x-1 transition-transform">
+                        Open Cards
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-1" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M17 8l4 4m0 0l-4 4m4-4H3" />
                         </svg>
-                    </button>
+                    </div>
                 </div>
-                <h2 id="a-fr" class="text-xl font-medium text-slate-700"></h2>
-                <p id="a-en" class="text-rose-300 italic text-sm"></p>
-            </div>
+            </a>
+
+            <!-- Card 3: Number Flashcards -->
+            <a href="index2.html" class="group block">
+                <div
+                    class="h-full glass-effect rounded-3xl p-6 transition-all duration-300 card-hover border-b-4 border-amber-400 bg-white/60 hover:bg-white/80">
+                    <div class="flex items-start justify-between mb-4">
+                        <div
+                            class="w-12 h-12 bg-amber-100 rounded-2xl flex items-center justify-center text-2xl shadow-sm group-hover:scale-110 transition-transform">
+                            #️⃣
+                        </div>
+                        <span
+                            class="bg-amber-100 text-amber-700 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">Vocabulary</span>
+                    </div>
+                    <h2 class="text-2xl font-bold text-slate-800 mb-2 group-hover:text-amber-600 transition-colors">
+                        Number Flashcards</h2>
+                    <p class="text-slate-500 leading-relaxed">Master French numbers from 1 to 31. Visual aids and
+                        pronunciation for every number.</p>
+                    <div
+                        class="mt-4 flex items-center text-amber-600 font-semibold group-hover:translate-x-1 transition-transform">
+                        Learn Numbers
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-1" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                        </svg>
+                    </div>
+                </div>
+            </a>
+
+            <!-- Card 4: Speed Number Game -->
+            <a href="numer.html" class="group block">
+                <div
+                    class="h-full glass-effect rounded-3xl p-6 transition-all duration-300 card-hover border-b-4 border-emerald-400 bg-white/60 hover:bg-white/80">
+                    <div class="flex items-start justify-between mb-4">
+                        <div
+                            class="w-12 h-12 bg-emerald-100 rounded-2xl flex items-center justify-center text-2xl shadow-sm group-hover:scale-110 transition-transform">
+                            ⚡
+                        </div>
+                        <span
+                            class="bg-emerald-100 text-emerald-700 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">Game</span>
+                    </div>
+                    <h2 class="text-2xl font-bold text-slate-800 mb-2 group-hover:text-emerald-600 transition-colors">
+                        Speed Number</h2>
+                    <p class="text-slate-500 leading-relaxed">Challenge your reflexes! Find numbers in sequence, odds,
+                        evens, or primes as fast as you can.</p>
+                    <div
+                        class="mt-4 flex items-center text-emerald-600 font-semibold group-hover:translate-x-1 transition-transform">
+                        Play Now
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-1" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                        </svg>
+                    </div>
+                </div>
+            </a>
+
         </div>
+
+        <footer class="text-center text-slate-400 text-sm mt-10 pb-4">
+            <p>© 2025 Vincci's Learning Hub. All rights reserved.</p>
+        </footer>
     </div>
 
-    <!-- Navigation Controls -->
-    <div class="mt-10 flex gap-4">
-        <button onclick="prevCard()"
-            class="btn-pulse bg-white border border-pink-200 p-4 rounded-2xl shadow-sm hover:bg-pink-50 transition-all text-pink-400">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <line x1="19" y1="12" x2="5" y2="12"></line>
-                <polyline points="12 19 5 12 12 5"></polyline>
-            </svg>
-        </button>
-        <button onclick="nextCard()"
-            class="btn-pulse bg-pink-500 p-4 rounded-2xl shadow-lg shadow-pink-200 text-white hover:bg-pink-600 transition-all">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <line x1="5" y1="12" x2="19" y2="12"></line>
-                <polyline points="12 5 19 12 12 19"></polyline>
-            </svg>
-        </button>
-    </div>
-
-    <script>
-        // Structured Data from the provided resource
-        const cardData = [
-            {
-                q_fr: "Comment tu t'appelles ?",
-                q_en: "What is your name?",
-                a_fr: "Je m'appelle...",
-                a_en: "My name is..."
-            },
-            {
-                q_fr: "Comment ça va ?",
-                q_en: "How are you?",
-                a_fr: "Ça va (bien/mal).",
-                a_en: "It is going (well/bad)."
-            },
-            {
-                q_fr: "Quel âge as-tu ?",
-                q_en: "How old are you?",
-                a_fr: "J'ai ... ans.",
-                a_en: "I have ... years."
-            },
-            {
-                q_fr: "Quelle est la date aujourd'hui ?",
-                q_en: "What is the date today?",
-                a_fr: "C'est le (jour) (#) (mois).",
-                a_en: "It is the (day) (#) (month)."
-            },
-            {
-                q_fr: "Quelle est la date de ton anniversaire ?",
-                q_en: "When is your birthday?",
-                a_fr: "Mon anniversaire c'est le (#) (mois).",
-                a_en: "My birthday is the (#) (month)."
-            },
-            {
-                q_fr: "As-tu un animal ?",
-                q_en: "Do you have a pet?",
-                a_fr: "J'ai un/une/# (animal).",
-                a_en: "I have a/an/# (pet)."
-            },
-            {
-                q_fr: "Qu'est-ce qu'il y a dans ta trousse ?",
-                q_en: "What is in your pencil case?",
-                a_fr: "Dans ma trousse, il y a ...",
-                a_en: "In my pencil case, there is..."
-            }
-        ];
-
-        let currentIndex = 0;
-        const cardEl = document.getElementById('card');
-        const qFrEl = document.getElementById('q-fr');
-        const qEnEl = document.getElementById('q-en');
-        const aFrEl = document.getElementById('a-fr');
-        const aEnEl = document.getElementById('a-en');
-        const indexDisplay = document.getElementById('current-index');
-        const totalDisplay = document.getElementById('total-cards');
-
-        // Initialize
-        function init() {
-            totalDisplay.innerText = cardData.length;
-            renderCard();
-            setupSwiping();
-        }
-
-        function renderCard() {
-            const data = cardData[currentIndex];
-
-            // Apply a small "pop" animation
-            cardEl.style.transform = 'scale(0.95)';
-            cardEl.style.opacity = '0';
-
-            setTimeout(() => {
-                qFrEl.innerText = data.q_fr;
-                qEnEl.innerText = data.q_en;
-                aFrEl.innerText = data.a_fr;
-                aEnEl.innerText = data.a_en;
-                indexDisplay.innerText = currentIndex + 1;
-
-                cardEl.style.transform = 'scale(1)';
-                cardEl.style.opacity = '1';
-            }, 150);
-        }
-
-        function nextCard() {
-            currentIndex = (currentIndex + 1) % cardData.length;
-            renderCard();
-        }
-
-        function prevCard() {
-            currentIndex = (currentIndex - 1 + cardData.length) % cardData.length;
-            renderCard();
-        }
-
-        // Text to Speech logic
-        function playTTS(type, e) {
-            if (e) {
-                e.stopPropagation();
-            }
-            const text = type === 'question' ? cardData[currentIndex].q_fr : cardData[currentIndex].a_fr;
-
-            // Clean text of parentheticals for better audio
-            const cleanText = text.replace(/\(.*\)/g, '').replace(/\.\.\./g, '');
-
-            const utterance = new SpeechSynthesisUtterance(cleanText);
-            utterance.lang = 'fr-FR';
-            utterance.rate = 0.9; // Slightly slower for learning
-
-            // Try to find a French voice
-            const voices = window.speechSynthesis.getVoices();
-            const frVoice = voices.find(v => v.lang.startsWith('fr'));
-            if (frVoice) utterance.voice = frVoice;
-
-            window.speechSynthesis.speak(utterance);
-        }
-
-        // Swipe Detection
-        function setupSwiping() {
-            let startX = 0;
-            let currentX = 0;
-            const threshold = 100;
-
-            cardEl.addEventListener('touchstart', (e) => {
-                startX = e.touches[0].clientX;
-                currentX = startX; // Initialize currentX to startX to prevent 0-based diffs on tap
-            }, { passive: true });
-
-            cardEl.addEventListener('touchmove', (e) => {
-                currentX = e.touches[0].clientX;
-                const diff = currentX - startX;
-                // Visual feedback during swipe
-                if (Math.abs(diff) < 200) { // Allow slightly more movement range for visual feedback
-                    cardEl.style.transform = `translateX(${diff}px) rotate(${diff * 0.05}deg)`;
-                }
-            }, { passive: true });
-
-            cardEl.addEventListener('touchend', () => {
-                const diff = currentX - startX;
-
-                if (diff > threshold) {
-                    prevCard();
-                } else if (diff < -threshold) {
-                    nextCard();
-                } else if (Math.abs(diff) > 0) {
-                    // Reset position if moved but not enough to swap
-                    // Use scale(1) to match the final state of renderCard
-                    cardEl.style.transform = 'scale(1)';
-                }
-
-                startX = 0;
-                currentX = 0;
-            });
-
-            // Keyboard support
-            document.addEventListener('keydown', (e) => {
-                if (e.key === 'ArrowRight') nextCard();
-                if (e.key === 'ArrowLeft') prevCard();
-                if (e.key === ' ') playTTS('question');
-                if (e.key === 'q') playTTS('question');
-                if (e.key === 'a') playTTS('answer');
-            });
-        }
-
-        // Ensure voices are loaded (some browsers need this)
-        window.speechSynthesis.onvoiceschanged = () => { };
-
-        init();
-    </script>
 </body>
 
 </html>
