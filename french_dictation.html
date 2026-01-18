@@ -189,6 +189,35 @@
             background: #eee;
         }
 
+        /* Show Meaning Button */
+        .btn-meaning {
+            background-color: #f8f8f8;
+            border: 2px solid var(--soft-pink);
+            color: var(--text-dark);
+            padding: 8px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            margin-bottom: 1.2rem;
+            font-size: 0.9rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-meaning:hover {
+            background-color: #fff0f3;
+            transform: translateY(-2px);
+        }
+
+        .btn-meaning.revealed {
+            background-color: var(--warm-orange);
+            color: white;
+            border-color: var(--warm-orange);
+            transform: scale(1.05);
+        }
+
         input[type="text"] {
             width: 90%;
             padding: 15px;
@@ -362,6 +391,9 @@
                 <div class="english-hint" id="english-hint">English Meaning</div>
                 <button class="audio-btn" onclick="playCurrentWord()" title="Listen"><i
                         class="fa-solid fa-volume-high"></i></button>
+                <button class="btn-meaning" id="btn-show-meaning" onclick="showMeaning()">
+                    <i class="fa-solid fa-eye"></i> Show meaning
+                </button>
                 <input type="text" id="user-input" placeholder="Type what you hear..." autocomplete="off" autofocus>
             </div>
 
@@ -474,6 +506,11 @@
                 hintEl.style.visibility = 'hidden';
             }
 
+            // Reset Show Meaning button
+            const meaningBtn = document.getElementById('btn-show-meaning');
+            meaningBtn.innerHTML = '<i class="fa-solid fa-eye"></i> Show meaning';
+            meaningBtn.classList.remove('revealed');
+
             const input = document.getElementById('user-input');
             if (typingEnabled) {
                 input.style.display = 'block';
@@ -504,6 +541,13 @@
             utter.rate = 0.8;
             synth.cancel();
             synth.speak(utter);
+        }
+
+        function showMeaning() {
+            const wordData = currentSet[currentIndex];
+            const meaningBtn = document.getElementById('btn-show-meaning');
+            meaningBtn.innerText = wordData.en;
+            meaningBtn.classList.add('revealed');
         }
 
         function startTimer() {
