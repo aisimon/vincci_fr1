@@ -7,6 +7,7 @@
     <title>Vincci's Learning Hub</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
         body {
             font-family: 'Outfit', sans-serif;
@@ -52,7 +53,7 @@
                     title: "French Dictation",
                     description: "Practice your French spelling with interactive dictation exercises. Listen, type, and see fireworks!",
                     href: "french_dictation.html",
-                    icon: "🎧",
+                    icon: "fa-solid fa-headphones",
                     category: "Spelling",
                     theme: {
                         border: "border-pink-400",
@@ -66,7 +67,7 @@
                     title: "Study Cards",
                     description: "Learn conversational French phrases. Swipe through questions and answers with audio support.",
                     href: "french_flashcards_v2.html",
-                    icon: "🗣️",
+                    icon: "fa-solid fa-person-chalkboard",
                     category: "Speaking",
                     theme: {
                         border: "border-indigo-400",
@@ -80,7 +81,7 @@
                     title: "Number Flashcards",
                     description: "Master French numbers from 1 to 31. Visual aids and pronunciation for every number.",
                     href: "french_flashcards.html",
-                    icon: "#️⃣",
+                    icon: "fa-solid fa-hashtag",
                     category: "Vocabulary",
                     theme: {
                         border: "border-amber-400",
@@ -94,7 +95,7 @@
                     title: "Speed Number (Ian Game)",
                     description: "Challenge your reflexes! Find numbers in sequence, odds, evens, or primes as fast as you can.",
                     href: "speed_number_challenge.html",
-                    icon: "⚡",
+                    icon: "fa-solid fa-bolt-lightning",
                     category: "Game",
                     theme: {
                         border: "border-emerald-400",
@@ -108,7 +109,7 @@
                     title: "Deep Sea Multiples",
                     description: "Dive into math! Practice your times tables with this underwater multiplication challenge.",
                     href: "times_table.html",
-                    icon: "🌊",
+                    icon: "fa-solid fa-fish",
                     category: "Math",
                     theme: {
                         border: "border-blue-400",
@@ -129,8 +130,8 @@
                 card.innerHTML = `
                     <div class="h-full glass-effect rounded-3xl p-6 transition-all duration-300 card-hover border-b-4 ${activity.theme.border} bg-white/60 hover:bg-white/80">
                         <div class="flex items-start justify-between mb-4">
-                            <div class="w-12 h-12 ${activity.theme.bg} rounded-2xl flex items-center justify-center text-2xl shadow-sm group-hover:scale-110 transition-transform">
-                                ${activity.icon}
+                            <div class="w-12 h-12 ${activity.theme.bg} rounded-2xl flex items-center justify-center text-xl shadow-sm group-hover:scale-110 transition-transform">
+                                <i class="${activity.icon} ${activity.theme.text}"></i>
                             </div>
                             <span class="${activity.theme.bg} ${activity.theme.text} text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">
                                 ${activity.category}
