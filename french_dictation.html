@@ -285,6 +285,32 @@
             z-index: 100;
             display: none;
         }
+
+        /* Alignment Utilities */
+        .text-left {
+            text-align: left;
+        }
+
+        .mb-4 {
+            margin-bottom: 1rem;
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            font-size: 11px;
+            color: var(--warm-pink);
+            text-decoration: none;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            font-weight: 800;
+            transition: all 0.2s;
+        }
+
+        .back-link:hover {
+            color: var(--warm-orange);
+            transform: translateX(-3px);
+        }
     </style>
 </head>
 
@@ -296,9 +322,8 @@
         <!-- Home Screen -->
         <div id="screen-home" class="screen active">
             <div class="text-left mb-4">
-                <a href="index.html"
-                    class="text-[10px] text-pink-400 hover:text-pink-600 transition-colors uppercase tracking-widest font-bold">
-                    <i class="fa-solid fa-chevron-left mr-1"></i> Back to Hub
+                <a href="index.html" class="back-link">
+                    <i class="fa-solid fa-chevron-left"></i> Back to Hub
                 </a>
             </div>
             <h1><i class="fa-solid fa-sparkles" style="color: var(--warm-orange);"></i> French Dictée <i
