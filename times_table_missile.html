@@ -38,8 +38,11 @@
             max-width: 500px;
             display: flex;
             flex-direction: column;
-            gap: 10px;
-            padding: 10px;
+            gap: 5px;
+            padding: 5px;
+            height: 100vh;
+            justify-content: center;
+            box-sizing: border-box;
         }
 
         canvas {
@@ -49,7 +52,8 @@
             box-shadow: 0 0 15px var(--neon-cyan);
             width: 100%;
             height: auto;
-            aspect-ratio: 4 / 5;
+            max-height: 45vh;
+            object-fit: contain;
         }
 
         .stats-bar {
@@ -66,9 +70,9 @@
         #feedback-text {
             height: 1.2em;
             text-align: center;
-            font-size: 1.4rem;
+            font-size: 1.2rem;
             color: var(--neon-pink);
-            margin: 5px 0;
+            margin: 2px 0;
             font-weight: bold;
             text-shadow: 0 0 10px var(--neon-pink);
         }
@@ -84,8 +88,8 @@
             background: var(--btn-color);
             color: var(--neon-cyan);
             border: 2px solid var(--neon-cyan);
-            padding: 15px;
-            font-size: 1.8rem;
+            padding: 10px;
+            font-size: 1.5rem;
             font-weight: bold;
             border-radius: 5px;
             cursor: pointer;
@@ -229,12 +233,13 @@
 
             if (type === 'drop') {
                 osc.type = 'sine';
-                osc.frequency.setValueAtTime(400, audioCtx.currentTime);
-                osc.frequency.exponentialRampToValueAtTime(100, audioCtx.currentTime + 1.5);
-                gain.gain.setValueAtTime(0.05, audioCtx.currentTime);
-                gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 1.5);
+                osc.frequency.setValueAtTime(1000, audioCtx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(200, audioCtx.currentTime + 4);
+                gain.gain.setValueAtTime(0, audioCtx.currentTime);
+                gain.gain.linearRampToValueAtTime(0.15, audioCtx.currentTime + 0.1);
+                gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 4);
                 osc.start();
-                osc.stop(audioCtx.currentTime + 1.5);
+                osc.stop(audioCtx.currentTime + 4);
             } else if (type === 'shoot') {
                 osc.type = 'triangle';
                 osc.frequency.setValueAtTime(200, audioCtx.currentTime);
@@ -263,7 +268,7 @@
         }
 
         const CANVAS_WIDTH = 400;
-        const CANVAS_HEIGHT = 500;
+        const CANVAS_HEIGHT = 420;
         canvas.width = CANVAS_WIDTH;
         canvas.height = CANVAS_HEIGHT;
 
@@ -503,6 +508,7 @@
         }
 
         function resetGame() {
+            initAudio();
             generateCity();
             gameState.score = 0; gameState.lives = 3; gameState.questionsCount = 0;
             gameState.gameActive = true; gameState.currentMissile = null; gameState.interceptors = [];
@@ -512,7 +518,13 @@
             draw();
         }
 
-        resetGame();
+        // Initialize layout but wait for user to start for audio
+        generateCity();
+        draw();
+        endModal.style.display = 'block';
+        document.getElementById('modal-title').innerText = "SYSTEM ONLINE";
+        document.getElementById('modal-desc').innerText = "Missile defense system initialized.";
+        document.querySelector('#end-modal button').innerText = "START MISSION";
     </script>
 </body>
 

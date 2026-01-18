@@ -34,13 +34,18 @@
     <div class="max-w-4xl mx-auto px-4 py-8 min-h-screen flex flex-col">
 
         <!-- Header -->
-        <header class="text-center mb-10 mt-4">
+        <header class="text-center mb-2 mt-4">
             <h1
                 class="text-4xl md:text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-purple-600 mb-3">
-                Vincci's Learning Hub
+                Vincci's & Ian's Learning Hub
             </h1>
-            <p class="text-slate-500 text-lg font-medium">Select an activity to start practicing!</p>
+            <!-- <p class="text-slate-500 text-lg font-medium">Select an activity to start practicing!</p> -->
         </header>
+
+        <!-- Category Filter -->
+        <div id="filter-container" class="flex flex-wrap justify-center gap-2 mb-6 items-center">
+            <!-- Filter buttons will be injected here -->
+        </div>
 
         <!-- Grid Container -->
         <div id="activity-grid" class="grid grid-cols-1 md:grid-cols-2 gap-6 flex-grow">
@@ -136,37 +141,75 @@
             ];
 
             const grid = document.getElementById('activity-grid');
+            const filterContainer = document.getElementById('filter-container');
+            let currentFilter = 'All';
 
-            activities.forEach(activity => {
-                const card = document.createElement('a');
-                card.href = activity.href;
-                card.className = "group block";
-                card.innerHTML = `
-                    <div class="h-full glass-effect rounded-3xl p-6 transition-all duration-300 card-hover border-b-4 ${activity.theme.border} bg-white/60 hover:bg-white/80">
-                        <div class="flex items-start justify-between mb-4">
-                            <div class="w-12 h-12 ${activity.theme.bg} rounded-2xl flex items-center justify-center text-xl shadow-sm group-hover:scale-110 transition-transform">
-                                <i class="${activity.icon} ${activity.theme.text}"></i>
+            const uniqueCategories = ['All', ...new Set(activities.map(a => a.category))];
+
+            function renderFilters() {
+                filterContainer.innerHTML = '';
+                uniqueCategories.forEach(cat => {
+                    const btn = document.createElement('button');
+                    btn.innerText = cat;
+                    const isActive = currentFilter === cat;
+                    btn.className = `px-5 py-2 rounded-full text-sm font-bold transition-all duration-300 shadow-sm ${isActive
+                        ? 'bg-indigo-600 text-white scale-105 shadow-indigo-200'
+                        : 'bg-white text-slate-600 hover:bg-indigo-50 hover:text-indigo-600'
+                        }`;
+                    btn.onclick = () => {
+                        currentFilter = cat;
+                        renderFilters();
+                        renderActivities();
+                    };
+                    filterContainer.appendChild(btn);
+                });
+            }
+
+            function renderActivities() {
+                grid.innerHTML = '';
+                const filteredActivities = currentFilter === 'All'
+                    ? activities
+                    : activities.filter(a => a.category === currentFilter);
+
+                filteredActivities.forEach(activity => {
+                    const card = document.createElement('a');
+                    card.href = activity.href;
+                    card.className = "group block opacity-0 translate-y-4 transition-all duration-500 ease-out";
+                    card.innerHTML = `
+                        <div class="h-full glass-effect rounded-3xl p-6 transition-all duration-300 card-hover border-b-4 ${activity.theme.border} bg-white/60 hover:bg-white/80">
+                            <div class="flex items-start justify-between mb-4">
+                                <div class="w-12 h-12 ${activity.theme.bg} rounded-2xl flex items-center justify-center text-xl shadow-sm group-hover:scale-110 transition-transform">
+                                    <i class="${activity.icon} ${activity.theme.text}"></i>
+                                </div>
+                                <span class="${activity.theme.bg} ${activity.theme.text} text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">
+                                    ${activity.category}
+                                </span>
                             </div>
-                            <span class="${activity.theme.bg} ${activity.theme.text} text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">
-                                ${activity.category}
-                            </span>
+                            <h2 class="text-2xl font-bold text-slate-800 mb-2 group-hover:${activity.theme.accent} transition-colors">
+                                ${activity.title}
+                            </h2>
+                            <p class="text-slate-500 leading-relaxed">
+                                ${activity.description}
+                            </p>
+                            <div class="mt-4 flex items-center ${activity.theme.accent} font-semibold group-hover:translate-x-1 transition-transform">
+                                ${activity.buttonText}
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                                </svg>
+                            </div>
                         </div>
-                        <h2 class="text-2xl font-bold text-slate-800 mb-2 group-hover:${activity.theme.accent} transition-colors">
-                            ${activity.title}
-                        </h2>
-                        <p class="text-slate-500 leading-relaxed">
-                            ${activity.description}
-                        </p>
-                        <div class="mt-4 flex items-center ${activity.theme.accent} font-semibold group-hover:translate-x-1 transition-transform">
-                            ${activity.buttonText}
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                            </svg>
-                        </div>
-                    </div>
-                `;
-                grid.appendChild(card);
-            });
+                    `;
+                    grid.appendChild(card);
+
+                    // Simple entrance animation
+                    requestAnimationFrame(() => {
+                        card.classList.remove('opacity-0', 'translate-y-4');
+                    });
+                });
+            }
+
+            renderFilters();
+            renderActivities();
         </script>
 
         <footer class="text-center text-slate-400 text-sm mt-10 pb-4">
