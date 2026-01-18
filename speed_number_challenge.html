@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,7 +8,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap');
-        
+
         body {
             font-family: 'Inter', sans-serif;
             background: #0f172a;
@@ -22,8 +23,13 @@
         }
 
         /* Dynamic Grid Layouts */
-        .grid-5 { grid-template-columns: repeat(5, 1fr); }
-        .grid-3 { grid-template-columns: repeat(3, 1fr); }
+        .grid-5 {
+            grid-template-columns: repeat(5, 1fr);
+        }
+
+        .grid-3 {
+            grid-template-columns: repeat(3, 1fr);
+        }
 
         .number-btn {
             aspect-ratio: 1 / 1;
@@ -47,10 +53,23 @@
         }
 
         @keyframes shake {
-            0%, 100% { transform: translateX(0); }
-            25% { transform: translateX(-5px); }
-            50% { transform: translateX(5px); }
-            75% { transform: translateX(-5px); }
+
+            0%,
+            100% {
+                transform: translateX(0);
+            }
+
+            25% {
+                transform: translateX(-5px);
+            }
+
+            50% {
+                transform: translateX(5px);
+            }
+
+            75% {
+                transform: translateX(-5px);
+            }
         }
 
         .stats-card {
@@ -72,9 +91,20 @@
         }
 
         @keyframes pulse-grow {
-            0% { transform: scale(0.5); opacity: 0; }
-            50% { transform: scale(1.2); opacity: 1; }
-            100% { transform: scale(1); opacity: 1; }
+            0% {
+                transform: scale(0.5);
+                opacity: 0;
+            }
+
+            50% {
+                transform: scale(1.2);
+                opacity: 1;
+            }
+
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
         }
 
         /* Toggle styling */
@@ -85,24 +115,38 @@
         }
     </style>
 </head>
+
 <body class="min-h-screen flex items-center justify-center p-4">
 
     <div id="app" class="w-full max-w-md">
+        <div class="mb-4">
+            <a href="index.html"
+                class="text-xs text-slate-500 hover:text-slate-300 transition-colors uppercase tracking-widest font-bold">
+                ← Back to Hub
+            </a>
+        </div>
         <!-- Settings Header -->
         <div class="flex flex-col gap-4 mb-6">
             <div class="flex gap-4">
                 <div class="flex-1">
-                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-2 px-1">Difficulty</label>
+                    <label
+                        class="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-2 px-1">Difficulty</label>
                     <div class="flex bg-slate-800 p-1 rounded-xl border border-slate-700">
-                        <button id="diff-easy" class="difficulty-btn flex-1 py-2 text-sm font-bold rounded-lg transition-all text-slate-400">Easy (9)</button>
-                        <button id="diff-standard" class="difficulty-btn active flex-1 py-2 text-sm font-bold rounded-lg transition-all text-slate-400">Standard (25)</button>
+                        <button id="diff-easy"
+                            class="difficulty-btn flex-1 py-2 text-sm font-bold rounded-lg transition-all text-slate-400">Easy
+                            (9)</button>
+                        <button id="diff-standard"
+                            class="difficulty-btn active flex-1 py-2 text-sm font-bold rounded-lg transition-all text-slate-400">Standard
+                            (25)</button>
                     </div>
                 </div>
             </div>
 
             <div>
-                <label for="mode-select" class="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-2 px-1">Game Mode</label>
-                <select id="mode-select" class="w-full bg-slate-800 border border-slate-700 text-white rounded-xl px-4 py-3 font-bold focus:ring-2 focus:ring-blue-500 outline-none transition-all cursor-pointer">
+                <label for="mode-select"
+                    class="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-2 px-1">Game Mode</label>
+                <select id="mode-select"
+                    class="w-full bg-slate-800 border border-slate-700 text-white rounded-xl px-4 py-3 font-bold focus:ring-2 focus:ring-blue-500 outline-none transition-all cursor-pointer">
                     <option value="sequential">Sequential (1, 2, 3...)</option>
                     <option value="odd">Odd Numbers (1, 3, 5...)</option>
                     <option value="even">Even Numbers (2, 4, 6...)</option>
@@ -113,7 +157,8 @@
 
         <!-- Header -->
         <div class="text-center mb-6">
-            <h1 class="text-4xl font-black bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-emerald-400 mb-1">
+            <h1
+                class="text-4xl font-black bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-emerald-400 mb-1">
                 SPEED NUMBER
             </h1>
             <p id="mode-description" class="text-slate-400 text-sm">Find numbers in sequence as fast as possible!</p>
@@ -137,16 +182,19 @@
 
         <!-- Game Board Container -->
         <div class="relative">
-            <div id="grid" class="number-grid bg-slate-800/50 p-3 rounded-2xl shadow-2xl border border-slate-700 grid-5">
+            <div id="grid"
+                class="number-grid bg-slate-800/50 p-3 rounded-2xl shadow-2xl border border-slate-700 grid-5">
                 <!-- Numbers injected here -->
             </div>
 
             <!-- Overlay for Start and Countdown -->
-            <div id="overlay" class="absolute inset-0 z-10 flex flex-col items-center justify-center bg-slate-900/95 rounded-2xl backdrop-blur-md transition-all duration-300">
+            <div id="overlay"
+                class="absolute inset-0 z-10 flex flex-col items-center justify-center bg-slate-900/95 rounded-2xl backdrop-blur-md transition-all duration-300">
                 <div id="countdown-display" class="hidden text-8xl font-black text-white mb-4"></div>
                 <div id="menu-content" class="flex flex-col items-center">
                     <h2 id="overlay-title" class="text-2xl font-bold mb-4">Ready?</h2>
-                    <button id="start-btn" class="px-8 py-4 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-xl shadow-lg shadow-blue-900/40 transition-all hover:scale-105 active:scale-95">
+                    <button id="start-btn"
+                        class="px-8 py-4 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-xl shadow-lg shadow-blue-900/40 transition-all hover:scale-105 active:scale-95">
                         START GAME
                     </button>
                 </div>
@@ -155,7 +203,8 @@
 
         <!-- Progress Bar -->
         <div class="w-full bg-slate-800 h-2 rounded-full mt-8 overflow-hidden">
-            <div id="progress" class="bg-gradient-to-r from-blue-500 to-emerald-500 h-full w-0 transition-all duration-300"></div>
+            <div id="progress"
+                class="bg-gradient-to-r from-blue-500 to-emerald-500 h-full w-0 transition-all duration-300"></div>
         </div>
     </div>
 
@@ -209,7 +258,7 @@
                 gain.connect(audioCtx.destination);
                 osc.start();
                 osc.stop(audioCtx.currentTime + duration);
-            } catch (e) {}
+            } catch (e) { }
         }
 
         const sounds = {
@@ -248,7 +297,7 @@
             const mode = modeSelect.value;
             currentSequence = generators[mode](gridSize);
             nextIndex = 0;
-            
+
             const shuffled = [...currentSequence];
             shuffle(shuffled);
 
@@ -260,10 +309,10 @@
                 const btn = document.createElement('button');
                 btn.className = `number-btn rounded-xl flex items-center justify-center bg-slate-700 hover:bg-slate-600 text-white shadow-md border-b-4 border-slate-900 transition-all ${gridSize === 9 ? 'text-4xl' : 'text-xl sm:text-2xl'}`;
                 btn.textContent = num;
-                
-                const hue = (num * 137.5) % 360; 
+
+                const hue = (num * 137.5) % 360;
                 btn.style.color = `hsl(${hue}, 80%, 80%)`;
-                
+
                 btn.onclick = () => handleNumberClick(num, btn);
                 gridEl.appendChild(btn);
             });
@@ -286,7 +335,7 @@
                 sounds.correct(nextIndex);
                 btnEl.classList.add('correct');
                 nextIndex++;
-                
+
                 const percent = (nextIndex / gridSize) * 100;
                 progressEl.style.width = `${percent}%`;
 
@@ -304,29 +353,29 @@
 
         async function startCountdown() {
             if (audioCtx.state === 'suspended') audioCtx.resume();
-            
+
             isCountingDown = true;
             menuContent.classList.add('hidden');
             countdownDisplay.classList.remove('hidden');
-            
-            initBoard(); 
-            
+
+            initBoard();
+
             const counts = ['3', '2', '1', 'GO!'];
             for (let i = 0; i < counts.length; i++) {
                 countdownDisplay.textContent = counts[i];
                 countdownDisplay.classList.remove('countdown-pulse');
-                void countdownDisplay.offsetWidth; 
+                void countdownDisplay.offsetWidth;
                 countdownDisplay.classList.add('countdown-pulse');
-                
+
                 if (i < counts.length - 1) {
                     sounds.tick();
                 } else {
                     sounds.go();
                 }
-                
+
                 await new Promise(resolve => setTimeout(resolve, 800));
             }
-            
+
             startGame();
         }
 
@@ -338,10 +387,10 @@
                 overlayEl.style.display = 'none';
                 countdownDisplay.classList.add('hidden');
             }, 300);
-            
+
             progressEl.style.width = '0%';
             timerEl.textContent = '0.00s';
-            
+
             startTime = Date.now();
             timerInterval = setInterval(() => {
                 const elapsed = (Date.now() - startTime) / 1000;
@@ -388,7 +437,7 @@
             countdownDisplay.classList.add('hidden');
             overlayEl.style.display = 'flex';
             overlayEl.style.opacity = '1';
-            
+
             const diffName = gridSize === 9 ? "the first 9" : "the first 25";
             const descriptions = {
                 sequential: `Find numbers 1 to ${gridSize} in order.`,
@@ -421,5 +470,5 @@
         initBoard();
     </script>
 </body>
-</html>
 
+</html>
