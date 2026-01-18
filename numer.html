@@ -13,13 +13,17 @@
             background: #0f172a;
             color: white;
             touch-action: manipulation;
+            overflow-x: hidden;
         }
 
         .number-grid {
             display: grid;
-            grid-template-columns: repeat(5, 1fr);
             gap: 10px;
         }
+
+        /* Dynamic Grid Layouts */
+        .grid-5 { grid-template-columns: repeat(5, 1fr); }
+        .grid-3 { grid-template-columns: repeat(3, 1fr); }
 
         .number-btn {
             aspect-ratio: 1 / 1;
@@ -54,47 +58,98 @@
             backdrop-filter: blur(10px);
             border: 1px solid rgba(255, 255, 255, 0.1);
         }
+
+        select {
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%2394a3b8' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+            background-position: right 0.5rem center;
+            background-repeat: no-repeat;
+            background-size: 1.5em 1.5em;
+            appearance: none;
+        }
+
+        .countdown-pulse {
+            animation: pulse-grow 0.5s ease-out;
+        }
+
+        @keyframes pulse-grow {
+            0% { transform: scale(0.5); opacity: 0; }
+            50% { transform: scale(1.2); opacity: 1; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        /* Toggle styling */
+        .difficulty-btn.active {
+            background-color: #3b82f6;
+            color: white;
+            box-shadow: 0 0 15px rgba(59, 130, 246, 0.5);
+        }
     </style>
 </head>
 <body class="min-h-screen flex items-center justify-center p-4">
 
     <div id="app" class="w-full max-w-md">
+        <!-- Settings Header -->
+        <div class="flex flex-col gap-4 mb-6">
+            <div class="flex gap-4">
+                <div class="flex-1">
+                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-2 px-1">Difficulty</label>
+                    <div class="flex bg-slate-800 p-1 rounded-xl border border-slate-700">
+                        <button id="diff-easy" class="difficulty-btn flex-1 py-2 text-sm font-bold rounded-lg transition-all text-slate-400">Easy (9)</button>
+                        <button id="diff-standard" class="difficulty-btn active flex-1 py-2 text-sm font-bold rounded-lg transition-all text-slate-400">Standard (25)</button>
+                    </div>
+                </div>
+            </div>
+
+            <div>
+                <label for="mode-select" class="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-2 px-1">Game Mode</label>
+                <select id="mode-select" class="w-full bg-slate-800 border border-slate-700 text-white rounded-xl px-4 py-3 font-bold focus:ring-2 focus:ring-blue-500 outline-none transition-all cursor-pointer">
+                    <option value="sequential">Sequential (1, 2, 3...)</option>
+                    <option value="odd">Odd Numbers (1, 3, 5...)</option>
+                    <option value="even">Even Numbers (2, 4, 6...)</option>
+                    <option value="prime">Prime Numbers (2, 3, 5...)</option>
+                </select>
+            </div>
+        </div>
+
         <!-- Header -->
-        <div class="text-center mb-8">
-            <h1 class="text-4xl font-black bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-emerald-400 mb-2">
+        <div class="text-center mb-6">
+            <h1 class="text-4xl font-black bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-emerald-400 mb-1">
                 SPEED NUMBER
             </h1>
-            <p class="text-slate-400">Press numbers 1 to 25 as fast as possible!</p>
+            <p id="mode-description" class="text-slate-400 text-sm">Find numbers in sequence as fast as possible!</p>
         </div>
 
         <!-- Stats -->
-        <div class="stats-card rounded-2xl p-6 mb-6 flex justify-between items-center">
+        <div class="stats-card rounded-2xl p-5 mb-6 flex justify-between items-center">
             <div>
-                <p class="text-xs uppercase tracking-widest text-slate-500 font-bold">Target</p>
-                <p id="next-num" class="text-3xl font-black text-blue-400">1</p>
+                <p class="text-[10px] uppercase tracking-widest text-slate-500 font-bold">Target</p>
+                <p id="next-num" class="text-2xl font-black text-blue-400 leading-tight">--</p>
             </div>
             <div class="text-center">
-                <p class="text-xs uppercase tracking-widest text-slate-500 font-bold">Time</p>
-                <p id="timer" class="text-3xl font-mono font-bold text-white">0.00s</p>
+                <p class="text-[10px] uppercase tracking-widest text-slate-500 font-bold">Time</p>
+                <p id="timer" class="text-3xl font-mono font-bold text-white leading-tight">0.00s</p>
             </div>
             <div class="text-right">
-                <p class="text-xs uppercase tracking-widest text-slate-500 font-bold">Best</p>
-                <p id="best-time" class="text-2xl font-bold text-emerald-400">--</p>
+                <p class="text-[10px] uppercase tracking-widest text-slate-500 font-bold">Best</p>
+                <p id="best-time" class="text-2xl font-bold text-emerald-400 leading-tight">--</p>
             </div>
         </div>
 
         <!-- Game Board Container -->
         <div class="relative">
-            <div id="grid" class="number-grid bg-slate-800/50 p-3 rounded-2xl shadow-2xl border border-slate-700">
+            <div id="grid" class="number-grid bg-slate-800/50 p-3 rounded-2xl shadow-2xl border border-slate-700 grid-5">
                 <!-- Numbers injected here -->
             </div>
 
-            <!-- Start/Overlay Screen -->
-            <div id="overlay" class="absolute inset-0 z-10 flex flex-col items-center justify-center bg-slate-900/90 rounded-2xl backdrop-blur-sm transition-opacity duration-300">
-                <h2 id="overlay-title" class="text-2xl font-bold mb-4">Ready?</h2>
-                <button id="start-btn" class="px-8 py-4 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-xl shadow-lg shadow-blue-900/40 transition-all hover:scale-105 active:scale-95">
-                    START GAME
-                </button>
+            <!-- Overlay for Start and Countdown -->
+            <div id="overlay" class="absolute inset-0 z-10 flex flex-col items-center justify-center bg-slate-900/95 rounded-2xl backdrop-blur-md transition-all duration-300">
+                <div id="countdown-display" class="hidden text-8xl font-black text-white mb-4"></div>
+                <div id="menu-content" class="flex flex-col items-center">
+                    <h2 id="overlay-title" class="text-2xl font-bold mb-4">Ready?</h2>
+                    <button id="start-btn" class="px-8 py-4 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-xl shadow-lg shadow-blue-900/40 transition-all hover:scale-105 active:scale-95">
+                        START GAME
+                    </button>
+                </div>
             </div>
         </div>
 
@@ -105,42 +160,67 @@
     </div>
 
     <script>
-        // Game Configuration
-        const MAX_NUM = 25;
-        let nextTarget = 1;
+        // Game State
+        let gridSize = 25;
+        let currentSequence = [];
+        let nextIndex = 0;
         let startTime = null;
         let timerInterval = null;
-        let bestTime = Infinity;
+        let bestTimes = {
+            easy: { sequential: Infinity, odd: Infinity, even: Infinity, prime: Infinity },
+            standard: { sequential: Infinity, odd: Infinity, even: Infinity, prime: Infinity }
+        };
         let isGameRunning = false;
+        let isCountingDown = false;
+
+        // Sequence Generators
+        const generators = {
+            sequential: (size) => Array.from({ length: size }, (_, i) => i + 1),
+            odd: (size) => Array.from({ length: size }, (_, i) => (i * 2) + 1),
+            even: (size) => Array.from({ length: size }, (_, i) => (i * 2) + 2),
+            prime: (size) => {
+                const primes = [];
+                let n = 2;
+                while (primes.length < size) {
+                    if (isPrime(n)) primes.push(n);
+                    n++;
+                }
+                return primes;
+            }
+        };
+
+        function isPrime(num) {
+            for (let i = 2, s = Math.sqrt(num); i <= s; i++)
+                if (num % i === 0) return false;
+            return num > 1;
+        }
 
         // Audio System
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-
         function playTone(freq, type = 'sine', duration = 0.1, volume = 0.1) {
-            const osc = audioCtx.createOscillator();
-            const gain = audioCtx.createGain();
-
-            osc.type = type;
-            osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
-            
-            gain.gain.setValueAtTime(volume, audioCtx.currentTime);
-            gain.gain.exponentialRampToValueAtTime(0.00001, audioCtx.currentTime + duration);
-
-            osc.connect(gain);
-            gain.connect(audioCtx.destination);
-
-            osc.start();
-            osc.stop(audioCtx.currentTime + duration);
+            try {
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = type;
+                osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+                gain.gain.setValueAtTime(volume, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.00001, audioCtx.currentTime + duration);
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start();
+                osc.stop(audioCtx.currentTime + duration);
+            } catch (e) {}
         }
 
         const sounds = {
-            correct: (num) => playTone(300 + (num * 20), 'sine', 0.2, 0.15),
-            wrong: () => playTone(150, 'sawtooth', 0.3, 0.1),
-            start: () => {
-                playTone(400, 'sine', 0.1);
-                setTimeout(() => playTone(600, 'sine', 0.1), 100);
-                setTimeout(() => playTone(800, 'sine', 0.2), 200);
+            tick: () => playTone(440, 'sine', 0.1, 0.1),
+            go: () => {
+                playTone(523.25, 'triangle', 0.3, 0.15);
+                setTimeout(() => playTone(659.25, 'triangle', 0.3, 0.1), 50);
+                setTimeout(() => playTone(783.99, 'triangle', 0.5, 0.1), 100);
             },
+            correct: (idx) => playTone(300 + (idx * 30), 'sine', 0.2, 0.15),
+            wrong: () => playTone(150, 'sawtooth', 0.3, 0.1),
             win: () => {
                 [600, 800, 1000, 1200].forEach((f, i) => {
                     setTimeout(() => playTone(f, 'square', 0.4, 0.05), i * 100);
@@ -155,28 +235,41 @@
         const bestTimeEl = document.getElementById('best-time');
         const overlayEl = document.getElementById('overlay');
         const overlayTitleEl = document.getElementById('overlay-title');
+        const menuContent = document.getElementById('menu-content');
+        const countdownDisplay = document.getElementById('countdown-display');
         const startBtn = document.getElementById('start-btn');
         const progressEl = document.getElementById('progress');
+        const modeSelect = document.getElementById('mode-select');
+        const modeDesc = document.getElementById('mode-description');
+        const diffEasyBtn = document.getElementById('diff-easy');
+        const diffStandardBtn = document.getElementById('diff-standard');
 
-        // Initialization
-        function initGame() {
-            const numbers = Array.from({ length: MAX_NUM }, (_, i) => i + 1);
-            shuffle(numbers);
+        function initBoard() {
+            const mode = modeSelect.value;
+            currentSequence = generators[mode](gridSize);
+            nextIndex = 0;
+            
+            const shuffled = [...currentSequence];
+            shuffle(shuffled);
+
+            // Set grid class
+            gridEl.className = `number-grid bg-slate-800/50 p-3 rounded-2xl shadow-2xl border border-slate-700 ${gridSize === 9 ? 'grid-3' : 'grid-5'}`;
 
             gridEl.innerHTML = '';
-            numbers.forEach(num => {
+            shuffled.forEach(num => {
                 const btn = document.createElement('button');
-                btn.className = 'number-btn rounded-xl flex items-center justify-center text-2xl bg-slate-700 hover:bg-slate-600 text-white shadow-md';
+                btn.className = `number-btn rounded-xl flex items-center justify-center bg-slate-700 hover:bg-slate-600 text-white shadow-md border-b-4 border-slate-900 transition-all ${gridSize === 9 ? 'text-4xl' : 'text-xl sm:text-2xl'}`;
                 btn.textContent = num;
                 
-                // Color mapping
-                const hue = (num * 137.5) % 360; // Golden angle for unique colors
-                btn.style.borderColor = `hsl(${hue}, 70%, 50%)`;
-                btn.style.borderWidth = '2px';
+                const hue = (num * 137.5) % 360; 
+                btn.style.color = `hsl(${hue}, 80%, 80%)`;
                 
-                btn.addEventListener('click', () => handleNumberClick(num, btn));
+                btn.onclick = () => handleNumberClick(num, btn);
                 gridEl.appendChild(btn);
             });
+
+            nextNumEl.textContent = currentSequence[0];
+            updateBestDisplay();
         }
 
         function shuffle(array) {
@@ -187,35 +280,68 @@
         }
 
         function handleNumberClick(num, btnEl) {
-            if (!isGameRunning) return;
+            if (!isGameRunning || isCountingDown) return;
 
-            if (num === nextTarget) {
-                // Correct
-                sounds.correct(num);
+            if (num === currentSequence[nextIndex]) {
+                sounds.correct(nextIndex);
                 btnEl.classList.add('correct');
-                nextTarget++;
+                nextIndex++;
                 
-                updateProgress();
+                const percent = (nextIndex / gridSize) * 100;
+                progressEl.style.width = `${percent}%`;
 
-                if (nextTarget > MAX_NUM) {
+                if (nextIndex >= gridSize) {
                     winGame();
                 } else {
-                    nextNumEl.textContent = nextTarget;
+                    nextNumEl.textContent = currentSequence[nextIndex];
                 }
             } else {
-                // Wrong
                 sounds.wrong();
                 btnEl.classList.add('wrong');
                 setTimeout(() => btnEl.classList.remove('wrong'), 400);
             }
         }
 
-        function updateProgress() {
-            const percent = ((nextTarget - 1) / MAX_NUM) * 100;
-            progressEl.style.width = `${percent}%`;
+        async function startCountdown() {
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            
+            isCountingDown = true;
+            menuContent.classList.add('hidden');
+            countdownDisplay.classList.remove('hidden');
+            
+            initBoard(); 
+            
+            const counts = ['3', '2', '1', 'GO!'];
+            for (let i = 0; i < counts.length; i++) {
+                countdownDisplay.textContent = counts[i];
+                countdownDisplay.classList.remove('countdown-pulse');
+                void countdownDisplay.offsetWidth; 
+                countdownDisplay.classList.add('countdown-pulse');
+                
+                if (i < counts.length - 1) {
+                    sounds.tick();
+                } else {
+                    sounds.go();
+                }
+                
+                await new Promise(resolve => setTimeout(resolve, 800));
+            }
+            
+            startGame();
         }
 
-        function startTimer() {
+        function startGame() {
+            isGameRunning = true;
+            isCountingDown = false;
+            overlayEl.style.opacity = '0';
+            setTimeout(() => {
+                overlayEl.style.display = 'none';
+                countdownDisplay.classList.add('hidden');
+            }, 300);
+            
+            progressEl.style.width = '0%';
+            timerEl.textContent = '0.00s';
+            
             startTime = Date.now();
             timerInterval = setInterval(() => {
                 const elapsed = (Date.now() - startTime) / 1000;
@@ -223,42 +349,76 @@
             }, 10);
         }
 
-        function startGame() {
-            if (audioCtx.state === 'suspended') audioCtx.resume();
-            
-            isGameRunning = true;
-            nextTarget = 1;
-            nextNumEl.textContent = '1';
-            overlayEl.style.opacity = '0';
-            setTimeout(() => overlayEl.style.display = 'none', 300);
-            
-            initGame();
-            updateProgress();
-            sounds.start();
-            startTimer();
-        }
-
         function winGame() {
             isGameRunning = false;
             clearInterval(timerInterval);
             sounds.win();
 
+            const diff = gridSize === 9 ? 'easy' : 'standard';
+            const mode = modeSelect.value;
             const finalTime = parseFloat(timerEl.textContent);
-            if (finalTime < bestTime) {
-                bestTime = finalTime;
-                bestTimeEl.textContent = bestTime.toFixed(2) + 's';
+            if (finalTime < bestTimes[diff][mode]) {
+                bestTimes[diff][mode] = finalTime;
+                updateBestDisplay();
             }
 
-            overlayTitleEl.innerHTML = `<span class="text-emerald-400">Finish!</span><br><span class="text-white text-4xl">${finalTime.toFixed(2)}s</span>`;
+            overlayTitleEl.innerHTML = `<span class="text-emerald-400">Fantastic!</span><br><span class="text-white text-4xl">${finalTime.toFixed(2)}s</span>`;
             startBtn.textContent = 'PLAY AGAIN';
+            menuContent.classList.remove('hidden');
             overlayEl.style.display = 'flex';
             setTimeout(() => overlayEl.style.opacity = '1', 10);
         }
 
-        startBtn.addEventListener('click', startGame);
+        function updateBestDisplay() {
+            const diff = gridSize === 9 ? 'easy' : 'standard';
+            const mode = modeSelect.value;
+            const best = bestTimes[diff][mode];
+            bestTimeEl.textContent = best === Infinity ? '--' : best.toFixed(2) + 's';
+        }
 
-        // First render
-        initGame();
+        function resetToMenu() {
+            if (isGameRunning || isCountingDown) {
+                clearInterval(timerInterval);
+                isGameRunning = false;
+                isCountingDown = false;
+            }
+            overlayTitleEl.textContent = 'Ready?';
+            startBtn.textContent = 'START GAME';
+            menuContent.classList.remove('hidden');
+            countdownDisplay.classList.add('hidden');
+            overlayEl.style.display = 'flex';
+            overlayEl.style.opacity = '1';
+            
+            const diffName = gridSize === 9 ? "the first 9" : "the first 25";
+            const descriptions = {
+                sequential: `Find numbers 1 to ${gridSize} in order.`,
+                odd: `Find ${diffName} odd numbers.`,
+                even: `Find ${diffName} even numbers.`,
+                prime: `Find ${diffName} prime numbers.`
+            };
+            modeDesc.textContent = descriptions[modeSelect.value];
+            initBoard();
+        }
+
+        modeSelect.onchange = resetToMenu;
+
+        diffEasyBtn.onclick = () => {
+            gridSize = 9;
+            diffEasyBtn.classList.add('active');
+            diffStandardBtn.classList.remove('active');
+            resetToMenu();
+        };
+
+        diffStandardBtn.onclick = () => {
+            gridSize = 25;
+            diffStandardBtn.classList.add('active');
+            diffEasyBtn.classList.remove('active');
+            resetToMenu();
+        };
+
+        startBtn.onclick = startCountdown;
+
+        initBoard();
     </script>
 </body>
 </html>
