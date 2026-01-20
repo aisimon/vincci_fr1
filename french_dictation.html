@@ -355,8 +355,10 @@
                     <i class="fa-solid fa-chevron-left"></i> Back to Hub
                 </a>
             </div>
-            <h1><i class="fa-solid fa-sparkles" style="color: var(--warm-orange);"></i> French Dictée <i
-                    class="fa-solid fa-sparkles" style="color: var(--warm-orange);"></i></h1>
+            <h1><i class="fa-solid fa-sparkles" style="color: var(--warm-orange);"></i>
+                French Dictation
+                <i class="fa-solid fa-sparkles" style="color: var(--warm-orange);"></i>
+            </h1>
 
             <div class="settings-container">
                 <span>Show English Meanings?</span>
@@ -376,9 +378,9 @@
 
             <p>Select your word list:</p>
             <button class="btn-large" onclick="startDictation(1)"><i class="fa-solid fa-list-check"></i> Dictation 1
-                (é)</button>
+                </button>
             <button class="btn-large" onclick="startDictation(2)"><i class="fa-solid fa-list-check"></i> Dictation 2
-                (ê)</button>
+                </button>
         </div>
 
         <!-- Test Screen -->
@@ -487,7 +489,7 @@
             currentIndex = 0;
             isPaused = false;
             userAnswers = new Array(currentSet.length).fill("");
-            document.getElementById('dictation-title').innerText = num === 1 ? "Dictée 1 (é)" : "Dictée 2 (ê)";
+            document.getElementById('dictation-title').innerText = num === 1 ? "Dictation 1" : "Dictation 2";
             document.getElementById('btn-pause').innerHTML = '<i class="fa-solid fa-pause"></i>';
             showScreen('screen-test');
             loadWord();
@@ -546,7 +548,9 @@
         function showMeaning() {
             const wordData = currentSet[currentIndex];
             const meaningBtn = document.getElementById('btn-show-meaning');
-            meaningBtn.innerText = wordData.en;
+            meaningBtn.innerText =
+                wordData.fr + " " +
+                wordData.en;
             meaningBtn.classList.add('revealed');
         }
 
