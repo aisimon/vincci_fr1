@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Theme Park Duck Shot</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Bungee&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --carnival-red: #e63946;
+            --carnival-white: #f1faee;
+            --carnival-blue: #457b9d;
+            --duck-yellow: #ffb703;
+        }
+
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            position: fixed;
+            font-family: 'Bungee', cursive;
+            background-color: #1d3557;
+            user-select: none;
+            -webkit-user-select: none;
+            touch-action: none;
+        }
+
+        .game-canvas {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to bottom, #a8dadc 0%, #a8dadc 60%, #1d3557 60%, #1d3557 100%);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        .gallery {
+            flex: 1;
+            position: relative;
+            overflow: hidden;
+            border-bottom: 12px solid #f1faee;
+        }
+
+        .carnival-tent {
+            position: absolute;
+            top: 0;
+            width: 100%;
+            height: 50px;
+            background: repeating-linear-gradient(90deg, var(--carnival-red), var(--carnival-red) 40px, var(--carnival-white) 40px, var(--carnival-white) 80px);
+            box-shadow: 0 6px 15px rgba(0,0,0,0.3);
+            z-index: 10;
+        }
+
+        .duck-target {
+            position: absolute;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            transition: top 0.6s ease-in;
+            pointer-events: none;
+            z-index: 5;
+        }
+
+        .duck-body-container {
+            width: 90px;
+            height: 80px;
+            filter: drop-shadow(0 6px 2px rgba(0,0,0,0.2));
+        }
+
+        .problem-sign {
+            background: white;
+            border: 6px solid #000;
+            padding: 6px 18px;
+            border-radius: 16px;
+            font-size: 2.2rem;
+            font-weight: 900;
+            color: #000;
+            white-space: nowrap;
+            margin-bottom: -10px;
+            z-index: 6;
+            box-shadow: 0 6px 0 rgba(0,0,0,0.2);
+            text-shadow: 2px 2px 0px rgba(0,0,0,0.1);
+        }
+
+        .duck-hit {
+            transform: translateY(100vh) rotate(540deg) !important;
+            transition: transform 1.2s cubic-bezier(0.5, 0, 1, 1);
+        }
+
+        .duck-happy {
+            animation: duck-jump 0.15s infinite alternate;
+        }
+
+        @keyframes duck-jump {
+            from { transform: translateY(0); }
+            to { transform: translateY(-35px); }
+        }
+
+        .controls {
+            height: 35%;
+            background: #e63946;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            padding: 20px;
+            z-index: 20;
+            border-top: 12px solid #c1121f;
+        }
+
+        .ans-btn {
+            background: #fb8500;
+            border: 5px solid #000;
+            border-radius: 20px;
+            color: white;
+            font-size: 3.2rem;
+            font-weight: 900;
+            font-family: 'Bungee', cursive;
+            box-shadow: 0 8px 0 #873e23;
+            transition: all 0.1s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-shadow: 4px 4px 0px #000;
+        }
+
+        .ans-btn:disabled {
+            filter: grayscale(0.7);
+            opacity: 0.6;
+            box-shadow: 0 4px 0 #873e23;
+            transform: translateY(4px);
+        }
+
+        .ans-btn:not(:disabled):active {
+            transform: translateY(4px);
+            box-shadow: 0 4px 0 #873e23;
+        }
+
+        .icon-btn {
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        .icon-btn:active { transform: scale(0.9); }
+
+        .muzzle-flash {
+            position: absolute;
+            inset: 0;
+            background: white;
+            opacity: 0;
+            pointer-events: none;
+            z-index: 50;
+        }
+
+        @keyframes flash-anim {
+            0% { opacity: 0.7; }
+            100% { opacity: 0; }
+        }
+
+        .popup-text {
+            position: absolute;
+            font-size: 3.5rem;
+            font-weight: 900;
+            pointer-events: none;
+            z-index: 60;
+            white-space: nowrap;
+            animation: popup-anim 1.5s ease-out forwards;
+        }
+
+        .bang-style {
+            color: #ff0000;
+            text-shadow: 4px 4px 0 white;
+        }
+
+        .taunt-style {
+            color: #457b9d;
+            text-shadow: 4px 4px 0 white;
+        }
+
+        @keyframes popup-anim {
+            0% { transform: scale(0.5) translateY(0); opacity: 0; }
+            15% { transform: scale(1.2) translateY(-20px); opacity: 1; }
+            80% { transform: scale(1.1) translateY(-30px); opacity: 1; }
+            100% { transform: scale(1) translateY(-60px); opacity: 0; }
+        }
+
+        /* Overlays */
+        .game-overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(29, 53, 87, 0.95);
+            z-index: 200;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+<div class="game-canvas">
+    <!-- Start Screen Overlay -->
+    <div id="start-screen" class="game-overlay">
+        <h1 class="text-6xl text-yellow-400 mb-8 drop-shadow-lg">DUCK SHOT MATH</h1>
+        <div class="mb-12">
+            <svg width="120" height="120" viewBox="0 0 100 100">
+                <path d="M20,60 Q20,30 50,30 Q80,30 80,60 Q80,80 50,80 Q20,80 20,60" fill="#ffb703" stroke="#fff" stroke-width="4"/>
+                <circle cx="65" cy="50" r="5" fill="black" />
+                <path d="M80,60 L95,55 L80,50" fill="#fb8500" stroke="#fff" stroke-width="4"/>
+            </svg>
+        </div>
+        <button onclick="startGame()" class="bg-green-500 border-4 border-white text-white px-16 py-6 rounded-3xl text-4xl shadow-2xl active:scale-95">
+            START GAME
+        </button>
+        <p class="text-white/60 mt-8 font-sans font-bold">MUSIC WILL PLAY AUTOMATICALLY</p>
+    </div>
+
+    <!-- Header -->
+    <div class="flex justify-between items-center px-6 py-4 bg-white/10 z-30">
+        <div class="flex items-center gap-2">
+            <div class="bg-white px-5 py-2 rounded-full border-4 border-black flex items-center gap-3 shadow-xl">
+                <span class="text-3xl">🐤</span>
+                <span id="score" class="text-3xl font-black text-orange-600">0</span>
+            </div>
+            <div id="music-btn" onclick="toggleMusic()" class="icon-btn bg-white w-12 h-12 rounded-full border-4 border-black flex items-center justify-center shadow-xl">
+                <span id="music-icon" class="text-2xl">🎵</span>
+            </div>
+        </div>
+        
+        <div id="diff-cycle-btn" onclick="cycleDifficulty()" class="icon-btn bg-white px-4 py-2 rounded-xl border-4 border-black flex items-center gap-2 shadow-xl min-w-[120px]">
+            <span id="diff-icon" class="text-2xl">👶</span>
+            <span id="diff-text" class="text-xl text-black">EASY</span>
+        </div>
+    </div>
+
+    <!-- Gallery Area -->
+    <div class="gallery" id="gallery">
+        <div class="carnival-tent"></div>
+        <div id="flash" class="muzzle-flash"></div>
+    </div>
+
+    <!-- Answer Buttons -->
+    <div class="controls">
+        <button class="ans-btn" onclick="checkAnswer(this)">?</button>
+        <button class="ans-btn" onclick="checkAnswer(this)">?</button>
+        <button class="ans-btn" onclick="checkAnswer(this)">?</button>
+        <button class="ans-btn" onclick="checkAnswer(this)">?</button>
+    </div>
+
+    <!-- Game Over Screen -->
+    <div id="end-screen" class="hidden game-overlay">
+        <h1 class="text-6xl mb-4 text-yellow-400">CARNIVAL CLOSED!</h1>
+        <p class="text-4xl mb-10 text-white">TOTAL HITS: <span id="final-score" class="text-white">0</span>/10</p>
+        <button onclick="restart()" class="bg-green-500 border-4 border-white text-white px-12 py-5 rounded-3xl text-4xl shadow-2xl active:scale-95">
+            PLAY AGAIN
+        </button>
+    </div>
+</div>
+
+<script>
+    const gallery = document.getElementById('gallery');
+    const scoreEl = document.getElementById('score');
+    const diffIcon = document.getElementById('diff-icon');
+    const diffText = document.getElementById('diff-text');
+    const flashEl = document.getElementById('flash');
+    const endScreen = document.getElementById('end-screen');
+    const startScreen = document.getElementById('start-screen');
+    const buttons = document.querySelectorAll('.ans-btn');
+    const musicIcon = document.getElementById('music-icon');
+
+    let score = 0;
+    let round = 1;
+    let currentDuck = null;
+    let currentAnswer = null;
+    let isMoving = false;
+    let isDashing = false;
+    let posX = 0;
+    let direction = 1;
+    let speed = 1.0; 
+    let difficultyState = 'easy';
+    let gameActive = false;
+    let isMuted = false;
+
+    let audioCtx = null;
+    let musicStarted = false;
+    const taunts = ["HA HA!", "BYE!", "SEE YA!", "TOO SLOW!", "MISS!", "OOPS!"];
+
+    function initAudio() {
+        if (!audioCtx) {
+            audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        }
+        if (audioCtx.state === 'suspended') {
+            audioCtx.resume();
+        }
+        if (!musicStarted && !isMuted) {
+            startBGM();
+        }
+    }
+
+    function startBGM() {
+        if (musicStarted || isMuted) return;
+        musicStarted = true;
+        
+        const tempo = 130;
+        const secondsPerBeat = 60 / tempo;
+        
+        // Classic bouncy carnival loop
+        const melody = [
+            {n: 60, d: 1}, {n: 64, d: 1}, {n: 67, d: 1}, {n: 72, d: 1},
+            {n: 71, d: 1}, {n: 67, d: 1}, {n: 65, d: 1}, {n: 62, d: 1},
+            {n: 60, d: 1}, {n: 64, d: 1}, {n: 67, d: 1}, {n: 72, d: 1},
+            {n: 74, d: 2}, {n: 72, d: 2}
+        ];
+
+        let nextNoteTime = audioCtx.currentTime;
+        let noteIdx = 0;
+
+        function scheduler() {
+            if (!musicStarted) return;
+            while (nextNoteTime < audioCtx.currentTime + 0.1) {
+                if (!isMuted) {
+                    playNote(melody[noteIdx].n, nextNoteTime, melody[noteIdx].d * secondsPerBeat * 0.8);
+                }
+                nextNoteTime += melody[noteIdx].d * secondsPerBeat;
+                noteIdx = (noteIdx + 1) % melody.length;
+            }
+            setTimeout(scheduler, 50);
+        }
+
+        function playNote(freq, time, dur) {
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.type = 'triangle';
+            osc.frequency.setValueAtTime(440 * Math.pow(2, (freq - 69) / 12), time);
+            gain.gain.setValueAtTime(0, time);
+            gain.gain.linearRampToValueAtTime(0.04, time + 0.05);
+            gain.gain.linearRampToValueAtTime(0, time + dur);
+            osc.connect(gain); gain.connect(audioCtx.destination);
+            osc.start(time); osc.stop(time + dur);
+        }
+
+        scheduler();
+    }
+
+    function startGame() {
+        initAudio();
+        startScreen.classList.add('hidden');
+        gameActive = true;
+        spawn();
+        gameLoop();
+    }
+
+    function toggleMusic() {
+        initAudio();
+        isMuted = !isMuted;
+        musicIcon.textContent = isMuted ? '🔇' : '🎵';
+        if (!isMuted && !musicStarted) startBGM();
+    }
+
+    function playGunshot() {
+        if (!audioCtx) return;
+        const duration = 0.5;
+        const bufferSize = audioCtx.sampleRate * duration;
+        const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+        const data = buffer.getChannelData(0);
+        for (let i = 0; i < bufferSize; i++) data[i] = Math.random() * 2 - 1;
+        const noise = audioCtx.createBufferSource();
+        noise.buffer = buffer;
+        const noiseFilter = audioCtx.createBiquadFilter();
+        noiseFilter.type = 'lowpass';
+        noiseFilter.frequency.setValueAtTime(1200, audioCtx.currentTime);
+        const noiseEnvelope = audioCtx.createGain();
+        noiseEnvelope.gain.setValueAtTime(1, audioCtx.currentTime);
+        noiseEnvelope.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.2);
+        noise.connect(noiseFilter); noiseFilter.connect(noiseEnvelope); noiseEnvelope.connect(audioCtx.destination);
+        const osc = audioCtx.createOscillator();
+        const oscEnvelope = audioCtx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(150, audioCtx.currentTime);
+        oscEnvelope.gain.setValueAtTime(0.8, audioCtx.currentTime);
+        oscEnvelope.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.15);
+        osc.connect(oscEnvelope); oscEnvelope.connect(audioCtx.destination);
+        noise.start(); osc.start();
+        noise.stop(audioCtx.currentTime + duration); osc.stop(audioCtx.currentTime + duration);
+    }
+
+    function playMissSound() {
+        if (!audioCtx) return;
+        const duration = 0.6;
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'square';
+        osc.frequency.setValueAtTime(400, audioCtx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(100, audioCtx.currentTime + duration);
+        gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
+        gain.gain.linearRampToValueAtTime(0, audioCtx.currentTime + duration);
+        osc.connect(gain); gain.connect(audioCtx.destination);
+        osc.start(); osc.stop(audioCtx.currentTime + duration);
+    }
+
+    function showPopup(text, type) {
+        if (!currentDuck) return;
+        const popup = document.createElement('div');
+        popup.className = `popup-text ${type === 'bang' ? 'bang-style' : 'taunt-style'}`;
+        popup.textContent = text;
+        popup.style.left = (posX + 20) + 'px';
+        popup.style.top = (parseFloat(currentDuck.style.top) - 40) + 'px';
+        gallery.appendChild(popup);
+        setTimeout(() => popup.remove(), 1500);
+    }
+
+    function cycleDifficulty() {
+        initAudio();
+        const modes = ['easy', 'normal', 'hard'];
+        const nextIdx = (modes.indexOf(difficultyState) + 1) % modes.length;
+        difficultyState = modes[nextIdx];
+        
+        const config = {
+            easy: { icon: '👶', text: 'EASY', color: 'border-black' },
+            normal: { icon: '😊', text: 'NORMAL', color: 'border-blue-500' },
+            hard: { icon: '🔥', text: 'HARD', color: 'border-red-600' }
+        };
+
+        diffIcon.textContent = config[difficultyState].icon;
+        diffText.textContent = config[difficultyState].text;
+        document.getElementById('diff-cycle-btn').className = `icon-btn bg-white px-4 py-2 rounded-xl border-4 ${config[difficultyState].color} flex items-center gap-2 shadow-xl min-w-[120px]`;
+
+        if (isMoving && !isDashing) {
+            updateSpeed();
+        }
+    }
+
+    function updateSpeed() {
+        if (difficultyState === 'easy') speed = 0.8 + Math.random() * 0.4;
+        else if (difficultyState === 'normal') speed = 1.8 + Math.random() * 1.0;
+        else speed = 5.0 + Math.random() * 2.0;
+    }
+
+    function generateProblem() {
+        const types = ['+', '-', '*'];
+        const type = types[Math.floor(Math.random() * types.length)];
+        let a, b, ans;
+        if (type === '*') {
+            a = Math.floor(Math.random() * 9) + 1;
+            b = Math.floor(Math.random() * 9) + 1;
+            ans = a * b;
+        } else {
+            const big = Math.floor(Math.random() * 90) + 10;
+            const small = Math.floor(Math.random() * 9) + 1;
+            if (type === '+') {
+                if (Math.random() > 0.5) { a = big; b = small; } else { a = small; b = big; }
+                ans = a + b;
+            } else {
+                a = big; b = small; ans = a - b;
+            }
+        }
+        currentAnswer = ans;
+        let options = new Set([ans]);
+        while (options.size < 4) {
+            let offset = Math.floor(Math.random() * 12) - 6;
+            let wrong = ans + (offset === 0 ? 5 : offset);
+            if (wrong >= 0 && !options.has(wrong)) options.add(wrong);
+        }
+        const shuffled = Array.from(options).sort(() => Math.random() - 0.5);
+        buttons.forEach((btn, i) => {
+            btn.textContent = shuffled[i];
+            btn.disabled = false;
+            btn.classList.remove('bg-red-600');
+        });
+        return `${a}${type === '*' ? '×' : type}${b}`;
+    }
+
+    function createDuck(problemText) {
+        const wrapper = document.createElement('div');
+        wrapper.className = 'duck-target';
+        direction = Math.random() > 0.5 ? 1 : -1;
+        const buffer = difficultyState === 'easy' ? 100 : 250;
+        posX = direction === 1 ? -buffer : window.innerWidth + buffer;
+        updateSpeed();
+        isDashing = false;
+        
+        const sign = document.createElement('div');
+        sign.className = 'problem-sign';
+        sign.textContent = problemText;
+        
+        const bodyContainer = document.createElement('div');
+        bodyContainer.className = 'duck-body-container';
+        bodyContainer.style.transform = `scaleX(${direction})`;
+        bodyContainer.innerHTML = `
+            <svg viewBox="0 0 100 100" width="100%" height="100%">
+                <path d="M20,60 Q20,30 50,30 Q80,30 80,60 Q80,80 50,80 Q20,80 20,60" fill="#ffb703" stroke="#000" stroke-width="4"/>
+                <circle cx="65" cy="50" r="5" fill="black" />
+                <path d="M80,60 L95,55 L80,50" fill="#fb8500" stroke="#000" stroke-width="4"/>
+            </svg>
+        `;
+        
+        wrapper.appendChild(sign);
+        wrapper.appendChild(bodyContainer);
+        gallery.appendChild(wrapper);
+        
+        const minTop = 80;
+        const maxTop = gallery.offsetHeight - 140;
+        const actualTop = minTop + Math.random() * (maxTop - minTop);
+        wrapper.style.top = actualTop + 'px';
+        wrapper.style.left = posX + 'px';
+        return wrapper;
+    }
+
+    function spawn() {
+        if (currentDuck) currentDuck.remove();
+        if (round > 10) {
+            finishGame();
+            return;
+        }
+        const problem = generateProblem();
+        currentDuck = createDuck(problem);
+        isMoving = true;
+    }
+
+    function checkAnswer(btn) {
+        if (!isMoving || !gameActive || isDashing) return;
+        initAudio();
+        if (parseInt(btn.textContent) === currentAnswer) {
+            playGunshot();
+            flashEl.style.animation = 'none';
+            void flashEl.offsetWidth; 
+            flashEl.style.animation = 'flash-anim 0.15s forwards';
+            showPopup('BANG!', 'bang');
+            isMoving = false;
+            score++;
+            scoreEl.textContent = score;
+            currentDuck.classList.add('duck-hit');
+            setTimeout(() => { round++; spawn(); }, 1200);
+        } else {
+            playMissSound();
+            isDashing = true;
+            speed = 22; 
+            currentDuck.classList.add('duck-happy');
+            btn.classList.add('bg-red-600');
+            const taunt = taunts[Math.floor(Math.random() * taunts.length)];
+            showPopup(taunt, 'taunt');
+            buttons.forEach(b => b.disabled = true);
+        }
+    }
+
+    function finishGame() {
+        gameActive = false;
+        isMoving = false;
+        document.getElementById('final-score').textContent = score;
+        endScreen.classList.remove('hidden');
+    }
+
+    function restart() {
+        initAudio();
+        score = 0; round = 1;
+        scoreEl.textContent = '0';
+        endScreen.classList.add('hidden');
+        gameActive = true;
+        spawn();
+    }
+
+    function gameLoop() {
+        if (isMoving && currentDuck && gameActive) {
+            posX += speed * direction;
+            currentDuck.style.left = posX + 'px';
+            const buffer = 300;
+            if ((direction === 1 && posX > window.innerWidth + buffer) || 
+                (direction === -1 && posX < -buffer)) {
+                isMoving = false;
+                round++;
+                spawn();
+            }
+        }
+        requestAnimationFrame(gameLoop);
+    }
+
+    document.addEventListener('touchstart', (e) => {
+        const tag = e.target.tagName;
+        if (tag !== 'BUTTON' && !e.target.closest('.icon-btn')) e.preventDefault();
+        initAudio();
+    }, { passive: false });
+
+    // Initial check for audio activation
+    document.addEventListener('click', initAudio, { once: true });
+</script>
+
+</body>
+</html>
+
