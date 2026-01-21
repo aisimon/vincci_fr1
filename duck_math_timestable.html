@@ -348,10 +348,6 @@
         if (musicStarted || isMuted) return;
         musicStarted = true;
 
-        const tempo = 130;
-        const secondsPerBeat = 60 / tempo;
-
-        // Classic bouncy carnival loop
         const melody = [
             {n: 60, d: 1}, {n: 64, d: 1}, {n: 67, d: 1}, {n: 72, d: 1},
             {n: 71, d: 1}, {n: 67, d: 1}, {n: 65, d: 1}, {n: 62, d: 1},
@@ -364,6 +360,14 @@
 
         function scheduler() {
             if (!musicStarted) return;
+
+            // Determine tempo based on difficulty
+            let tempo = 130;
+            if (difficultyState === 'normal') tempo = 165;
+            if (difficultyState === 'hard') tempo = 205;
+
+            const secondsPerBeat = 60 / tempo;
+
             while (nextNoteTime < audioCtx.currentTime + 0.1) {
                 if (!isMuted) {
                     playNote(melody[noteIdx].n, nextNoteTime, melody[noteIdx].d * secondsPerBeat * 0.8);
