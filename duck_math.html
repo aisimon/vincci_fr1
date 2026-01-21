@@ -72,17 +72,27 @@
 
         .problem-sign {
             background: white;
-            border: 6px solid #000;
-            padding: 6px 18px;
+            border: 4px solid #000;
+            padding: 4px 12px;
             border-radius: 16px;
-            font-size: 2.2rem;
+            font-size: 1.5rem;
             font-weight: 900;
             color: #000;
             white-space: nowrap;
             margin-bottom: -10px;
             z-index: 6;
-            box-shadow: 0 6px 0 rgba(0,0,0,0.2);
-            text-shadow: 2px 2px 0px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 0 rgba(0,0,0,0.2);
+            text-shadow: 1px 1px 0px rgba(0,0,0,0.1);
+        }
+
+        @media (min-width: 640px) {
+            .problem-sign {
+                border-width: 6px;
+                padding: 6px 18px;
+                font-size: 2.2rem;
+                box-shadow: 0 6px 0 rgba(0,0,0,0.2);
+                text-shadow: 2px 2px 0px rgba(0,0,0,0.1);
+            }
         }
 
         .duck-hit {
@@ -112,18 +122,27 @@
 
         .ans-btn {
             background: #fb8500;
-            border: 5px solid #000;
+            border: 3px solid #000;
             border-radius: 20px;
             color: white;
-            font-size: 3.2rem;
+            font-size: 2.2rem;
             font-weight: 900;
             font-family: 'Bungee', cursive;
-            box-shadow: 0 8px 0 #873e23;
+            box-shadow: 0 6px 0 #873e23;
             transition: all 0.1s;
             display: flex;
             align-items: center;
             justify-content: center;
-            text-shadow: 4px 4px 0px #000;
+            text-shadow: 2px 2px 0px #000;
+        }
+
+        @media (min-width: 640px) {
+            .ans-btn {
+                border-width: 5px;
+                font-size: 3.2rem;
+                box-shadow: 0 8px 0 #873e23;
+                text-shadow: 4px 4px 0px #000;
+            }
         }
 
         .ans-btn:disabled {
@@ -220,25 +239,26 @@
     </div>
 
     <!-- Header -->
-    <div class="flex justify-between items-center px-6 py-4 bg-white/10 z-30">
-        <a href="index.html" class="icon-btn bg-white px-4 py-2 rounded-xl border-4 border-black flex items-center gap-2 shadow-xl no-underline">
-            <span class="text-2xl">🏠</span>
-            <span class="text-xl text-black">← Back to Hub</span>
+    <div class="flex justify-between items-center px-2 py-3 bg-white/10 z-30 gap-1 sm:gap-4 sm:px-6">
+        <a href="index.html" class="icon-btn bg-white px-2 py-1.5 rounded-xl border-2 sm:border-4 border-black flex items-center gap-1 shadow-lg no-underline shrink-0">
+            <span class="text-xl sm:text-2xl">🏠</span>
+            <span class="hidden sm:inline text-base sm:text-xl text-black">HUB</span>
         </a>
 
-        <div class="flex items-center gap-2">
-            <div class="bg-white px-5 py-2 rounded-full border-4 border-black flex items-center gap-3 shadow-xl">
-                <span class="text-3xl">🐤</span>
-                <span id="score" class="text-3xl font-black text-orange-600">0</span>
+        <div class="flex items-center gap-1 sm:gap-2">
+            <div class="bg-white px-3 py-1 rounded-full border-2 sm:border-4 border-black flex items-center gap-1.5 shadow-lg">
+                <span class="text-xl sm:text-3xl">🐤</span>
+                <span id="score" class="text-xl sm:text-3xl font-black text-orange-600">0</span>
             </div>
-            <div id="music-btn" onclick="toggleMusic()" class="icon-btn bg-white w-12 h-12 rounded-full border-4 border-black flex items-center justify-center shadow-xl">
-                <span id="music-icon" class="text-2xl">🎵</span>
+
+            <div id="music-btn" onclick="toggleMusic()" class="icon-btn bg-white w-9 h-9 sm:w-12 sm:h-12 rounded-full border-2 sm:border-4 border-black flex items-center justify-center shadow-lg shrink-0">
+                <span id="music-icon" class="text-xl sm:text-2xl">🎵</span>
             </div>
         </div>
 
-        <div id="diff-cycle-btn" onclick="cycleDifficulty()" class="icon-btn bg-white px-4 py-2 rounded-xl border-4 border-black flex items-center gap-2 shadow-xl min-w-[120px]">
-            <span id="diff-icon" class="text-2xl">👶</span>
-            <span id="diff-text" class="text-xl text-black">EASY</span>
+        <div id="diff-cycle-btn" onclick="cycleDifficulty()" class="icon-btn bg-white px-2 py-1 rounded-xl border-2 sm:border-4 border-black flex items-center gap-1 shadow-lg min-w-[70px] sm:min-w-[120px] justify-center">
+            <span id="diff-icon" class="text-xl sm:text-2xl">👶</span>
+            <span id="diff-text" class="text-xs sm:text-xl text-black">EASY</span>
         </div>
     </div>
 
@@ -310,10 +330,6 @@
         if (musicStarted || isMuted) return;
         musicStarted = true;
 
-        const tempo = 130;
-        const secondsPerBeat = 60 / tempo;
-
-        // Classic bouncy carnival loop
         const melody = [
             {n: 60, d: 1}, {n: 64, d: 1}, {n: 67, d: 1}, {n: 72, d: 1},
             {n: 71, d: 1}, {n: 67, d: 1}, {n: 65, d: 1}, {n: 62, d: 1},
@@ -326,6 +342,14 @@
 
         function scheduler() {
             if (!musicStarted) return;
+
+            // Determine tempo based on difficulty
+            let tempo = 130;
+            if (difficultyState === 'normal') tempo = 165;
+            if (difficultyState === 'hard') tempo = 205;
+
+            const secondsPerBeat = 60 / tempo;
+
             while (nextNoteTime < audioCtx.currentTime + 0.1) {
                 if (!isMuted) {
                     playNote(melody[noteIdx].n, nextNoteTime, melody[noteIdx].d * secondsPerBeat * 0.8);
