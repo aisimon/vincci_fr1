@@ -220,25 +220,43 @@
     </div>
 
     <!-- Header -->
-    <div class="flex justify-between items-center px-6 py-4 bg-white/10 z-30">
-        <a href="index.html" class="icon-btn bg-white px-4 py-2 rounded-xl border-4 border-black flex items-center gap-2 shadow-xl no-underline">
+    <div class="flex justify-between items-center px-6 py-4 bg-white/10 z-30 gap-4">
+        <a href="index.html" class="icon-btn bg-white px-4 py-2 rounded-xl border-4 border-black flex items-center gap-2 shadow-xl no-underline shrink-0">
             <span class="text-2xl">🏠</span>
-            <span class="text-xl text-black">← Back to Hub</span>
+            <span class="hidden md:inline text-xl text-black">HUB</span>
         </a>
 
         <div class="flex items-center gap-2">
+            <select id="table-select" onchange="resetGame()" class="bg-white px-3 py-2 rounded-xl border-4 border-black font-black text-lg focus:outline-none shadow-xl">
+                <option value="all">ALL TABLES</option>
+                <option value="2">2x TABLE</option>
+                <option value="3">3x TABLE</option>
+                <option value="4">4x TABLE</option>
+                <option value="5" selected>5x TABLE</option>
+                <option value="6">6x TABLE</option>
+                <option value="7">7x TABLE</option>
+                <option value="8">8x TABLE</option>
+                <option value="9">9x TABLE</option>
+                <option value="10">10x TABLE</option>
+                <option value="11">11x TABLE</option>
+                <option value="12">12x TABLE</option>
+            </select>
+
             <div class="bg-white px-5 py-2 rounded-full border-4 border-black flex items-center gap-3 shadow-xl">
                 <span class="text-3xl">🐤</span>
                 <span id="score" class="text-3xl font-black text-orange-600">0</span>
             </div>
+        </div>
+
+        <div class="flex items-center gap-2">
             <div id="music-btn" onclick="toggleMusic()" class="icon-btn bg-white w-12 h-12 rounded-full border-4 border-black flex items-center justify-center shadow-xl">
                 <span id="music-icon" class="text-2xl">🎵</span>
             </div>
-        </div>
 
-        <div id="diff-cycle-btn" onclick="cycleDifficulty()" class="icon-btn bg-white px-4 py-2 rounded-xl border-4 border-black flex items-center gap-2 shadow-xl min-w-[120px]">
-            <span id="diff-icon" class="text-2xl">👶</span>
-            <span id="diff-text" class="text-xl text-black">EASY</span>
+            <div id="diff-cycle-btn" onclick="cycleDifficulty()" class="icon-btn bg-white px-4 py-2 rounded-xl border-4 border-black flex items-center gap-2 shadow-xl min-w-[120px]">
+                <span id="diff-icon" class="text-2xl">👶</span>
+                <span id="diff-text" class="text-xl text-black">EASY</span>
+            </div>
         </div>
     </div>
 
@@ -276,6 +294,7 @@
     const startScreen = document.getElementById('start-screen');
     const buttons = document.querySelectorAll('.ans-btn');
     const musicIcon = document.getElementById('music-icon');
+    const tableSelect = document.getElementById('table-select');
 
     let score = 0;
     let round = 1;
@@ -446,37 +465,52 @@
     }
 
     function generateProblem() {
-        const types = ['+', '-', '*'];
-        const type = types[Math.floor(Math.random() * types.length)];
-        let a, b, ans;
-        if (type === '*') {
-            a = Math.floor(Math.random() * 9) + 1;
-            b = Math.floor(Math.random() * 9) + 1;
-            ans = a * b;
+        const table = tableSelect.value;
+        let a, b;
+
+        if (table === 'all') {
+            a = Math.floor(Math.random() * 11) + 2; // 2-12
         } else {
-            const big = Math.floor(Math.random() * 90) + 10;
-            const small = Math.floor(Math.random() * 9) + 1;
-            if (type === '+') {
-                if (Math.random() > 0.5) { a = big; b = small; } else { a = small; b = big; }
-                ans = a + b;
-            } else {
-                a = big; b = small; ans = a - b;
-            }
+            a = parseInt(table);
         }
+
+        b = Math.floor(Math.random() * 12) + 1; // 1-12
+
+        // Randomly swap a and b for variety if "all" is selected
+        if (table === 'all' && Math.random() > 0.5) {
+            [a, b] = [b, a];
+        }
+
+        const ans = a * b;
         currentAnswer = ans;
+
         let options = new Set([ans]);
         while (options.size < 4) {
-            let offset = Math.floor(Math.random() * 12) - 6;
-            let wrong = ans + (offset === 0 ? 5 : offset);
-            if (wrong >= 0 && !options.has(wrong)) options.add(wrong);
+            // Generate plausible wrong answers
+            let wrong;
+            const r = Math.random();
+            if (r < 0.4) {
+                // Off by one multiplier
+                wrong = a * (b + (Math.random() > 0.5 ? 1 : -1));
+            } else if (r < 0.7) {
+                // Off by one table
+                wrong = (a + (Math.random() > 0.5 ? 1 : -1)) * b;
+            } else {
+                // Random nearby value
+                wrong = ans + (Math.floor(Math.random() * 10) - 5);
+            }
+
+            if (wrong > 0 && !options.has(wrong)) options.add(wrong);
         }
+
         const shuffled = Array.from(options).sort(() => Math.random() - 0.5);
         buttons.forEach((btn, i) => {
             btn.textContent = shuffled[i];
             btn.disabled = false;
             btn.classList.remove('bg-red-600');
         });
-        return `${a}${type === '*' ? '×' : type}${b}`;
+
+        return `${a} × ${b}`;
     }
 
     function createDuck(problemText) {
@@ -559,6 +593,18 @@
         endScreen.classList.remove('hidden');
     }
 
+    function resetGame() {
+        if (currentDuck) currentDuck.remove();
+        score = 0;
+        round = 1;
+        scoreEl.textContent = '0';
+        isMoving = false;
+        isDashing = false;
+        if (gameActive) {
+            spawn();
+        }
+    }
+
     function restart() {
         initAudio();
         score = 0; round = 1;
@@ -585,7 +631,7 @@
 
     document.addEventListener('touchstart', (e) => {
         const tag = e.target.tagName;
-        if (tag !== 'BUTTON' && !e.target.closest('.icon-btn')) e.preventDefault();
+        if (tag !== 'BUTTON' && !e.target.closest('.icon-btn') && tag !== 'SELECT') e.preventDefault();
         initAudio();
     }, { passive: false });
 
