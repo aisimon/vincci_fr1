@@ -118,13 +118,14 @@
 
         .controls {
             height: 35%;
-            background: #e63946;
+            background: #2a9d8f;
             display: grid;
             grid-template-columns: repeat(2, 1fr);
             gap: 15px;
             padding: 20px;
             z-index: 20;
-            border-top: 12px solid #c1121f;
+            border-top: 12px solid #264653;
+            transition: background 0.3s, border-color 0.3s;
         }
 
         .ans-btn {
@@ -367,6 +368,7 @@
         const buttons = document.querySelectorAll('.ans-btn');
         const musicIcon = document.getElementById('music-icon');
         const tableSelect = document.getElementById('table-select');
+        const controlsArea = document.querySelector('.controls');
 
         let score = 0;
         let round = 1;
@@ -571,14 +573,17 @@
             difficultyState = modes[nextIdx];
 
             const config = {
-                easy: { icon: '👶', text: 'EASY', color: 'border-black' },
-                normal: { icon: '😊', text: 'NORMAL', color: 'border-blue-500' },
-                hard: { icon: '🔥', text: 'HARD', color: 'border-red-600' }
+                easy: { icon: '👶', text: 'EASY', color: 'border-black', bg: '#2a9d8f', border: '#264653' },
+                normal: { icon: '😊', text: 'NORMAL', color: 'border-blue-500', bg: '#e63946', border: '#c1121f' },
+                hard: { icon: '🔥', text: 'HARD', color: 'border-red-600', bg: '#6a040f', border: '#370617' }
             };
 
             diffIcon.textContent = config[difficultyState].icon;
             diffText.textContent = config[difficultyState].text;
             document.getElementById('diff-cycle-btn').className = `icon-btn bg-white px-2 h-9 sm:h-12 rounded-xl border-4 ${config[difficultyState].color} flex items-center gap-1 shadow-xl min-w-[70px] sm:min-w-[120px] justify-center`;
+
+            controlsArea.style.background = config[difficultyState].bg;
+            controlsArea.style.borderTopColor = config[difficultyState].border;
 
             if (isMoving && !isDashing) {
                 updateSpeed();
