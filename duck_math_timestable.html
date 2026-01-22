@@ -285,30 +285,30 @@
         <!-- Header -->
         <div class="flex justify-between items-center px-2 py-3 bg-white/10 z-30 gap-1 sm:gap-4 sm:px-6">
             <a href="index.html"
-                class="icon-btn bg-white px-2 py-1.5 rounded-xl border-2 sm:border-4 border-black flex items-center gap-1 shadow-lg no-underline shrink-0">
+                class="icon-btn bg-white px-2 h-9 sm:h-12 rounded-xl border-2 sm:border-4 border-black flex items-center gap-1 shadow-lg no-underline shrink-0">
                 <span class="text-xl sm:text-2xl">🏠</span>
                 <span class="hidden sm:inline text-base sm:text-xl text-black">HUB</span>
             </a>
 
             <div class="flex items-center gap-1 sm:gap-2">
                 <select id="table-select" onchange="resetGame()"
-                    class="bg-white px-2 py-1 rounded-xl border-2 sm:border-4 border-black font-black text-sm sm:text-lg focus:outline-none shadow-lg appearance-none cursor-pointer">
-                    <option value="all">ALL Tables</option>
-                    <option value="2">2 Timestables</option>
-                    <option value="3">3 Timestables</option>
-                    <option value="4">4 Timestables</option>
-                    <option value="5" selected>5 Timestables</option>
-                    <option value="6">6 Timestables</option>
-                    <option value="7">7 Timestables</option>
-                    <option value="8">8 Timestables</option>
-                    <option value="9">9 Timestables</option>
-                    <option value="10">10 Timestables</option>
-                    <option value="11">11 Timestables</option>
-                    <option value="12">12 Timestables</option>
+                    class="bg-white px-2 h-9 sm:h-12 rounded-xl border-2 sm:border-4 border-black font-black text-sm sm:text-lg focus:outline-none shadow-lg appearance-none cursor-pointer">
+                    <option value="all">ALL</option>
+                    <option value="2">2 x</option>
+                    <option value="3">3 x</option>
+                    <option value="4">4 x</option>
+                    <option value="5" selected>5 x</option>
+                    <option value="6">6 x</option>
+                    <option value="7">7 x</option>
+                    <option value="8">8 x</option>
+                    <option value="9">9 x</option>
+                    <option value="10">10 x</option>
+                    <option value="11">11 x</option>
+                    <option value="12">12 x</option>
                 </select>
 
                 <div
-                    class="bg-white px-3 py-1 rounded-full border-2 sm:border-4 border-black flex items-center gap-1.5 shadow-lg">
+                    class="bg-white px-3 h-9 sm:h-12 rounded-full border-2 sm:border-4 border-black flex items-center gap-1.5 shadow-lg">
                     <span class="text-xl sm:text-3xl">🐤</span>
                     <span id="score" class="text-xl sm:text-3xl font-black text-orange-600">0</span>
                 </div>
@@ -321,7 +321,7 @@
                 </div>
 
                 <div id="diff-cycle-btn" onclick="cycleDifficulty()"
-                    class="icon-btn bg-white px-2 py-1 rounded-xl border-2 sm:border-4 border-black flex items-center gap-1 shadow-lg min-w-[70px] sm:min-w-[120px] justify-center">
+                    class="icon-btn bg-white px-2 h-9 sm:h-12 rounded-xl border-2 sm:border-4 border-black flex items-center gap-1 shadow-lg min-w-[70px] sm:min-w-[120px] justify-center">
                     <span id="diff-icon" class="text-xl sm:text-2xl">👶</span>
                     <span id="diff-text" class="text-xs sm:text-xl text-black">EASY</span>
                 </div>
@@ -578,7 +578,7 @@
 
             diffIcon.textContent = config[difficultyState].icon;
             diffText.textContent = config[difficultyState].text;
-            document.getElementById('diff-cycle-btn').className = `icon-btn bg-white px-4 py-2 rounded-xl border-4 ${config[difficultyState].color} flex items-center gap-2 shadow-xl min-w-[120px]`;
+            document.getElementById('diff-cycle-btn').className = `icon-btn bg-white px-2 h-9 sm:h-12 rounded-xl border-4 ${config[difficultyState].color} flex items-center gap-1 shadow-xl min-w-[70px] sm:min-w-[120px] justify-center`;
 
             if (isMoving && !isDashing) {
                 updateSpeed();
