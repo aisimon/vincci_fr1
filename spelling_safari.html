@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Spelling Safari</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Bungee&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --jungle-green: #2ecc71;
+            --jungle-dark: #27ae60;
+            --earth-brown: #795548;
+            --sky-blue: #87CEEB;
+        }
+
+        body,
+        html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            position: fixed;
+            font-family: 'Bungee', cursive;
+            background-color: var(--jungle-green);
+            user-select: none;
+            -webkit-user-select: none;
+            touch-action: none;
+        }
+
+        .game-canvas {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to bottom, var(--sky-blue) 0%, var(--sky-blue) 60%, var(--jungle-green) 60%, var(--jungle-dark) 100%);
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Animated Jungle Elements Background */
+        .tree-bg {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            height: 300px;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 320'%3E%3Cpath fill='%2327ae60' fill-opacity='1' d='M0,224L48,213.3C96,203,192,181,288,181.3C384,181,480,203,576,224C672,245,768,267,864,250.7C960,235,1056,181,1152,165.3C1248,149,1344,171,1392,181.3L1440,192L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z'%3E%3C/path%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-size: cover;
+            opacity: 0.8;
+            pointer-events: none;
+        }
+
+        .butterfly {
+            position: absolute;
+            width: 60px;
+            height: 60px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 2rem;
+            filter: drop-shadow(0 4px 2px rgba(0, 0, 0, 0.2));
+            transition: transform 0.1s;
+            z-index: 10;
+        }
+
+        .butterfly svg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            fill: #FFD700;
+        }
+
+        .butterfly span {
+            z-index: 2;
+            color: black;
+            font-weight: 900;
+            margin-top: -5px;
+            /* Visual alignment within svg */
+        }
+
+        .correct-catch {
+            animation: catch-flash 0.5s ease-out;
+        }
+
+        @keyframes catch-flash {
+            0% {
+                transform: scale(1);
+                filter: brightness(1);
+                opacity: 1;
+            }
+
+            50% {
+                transform: scale(1.5);
+                filter: brightness(2);
+                opacity: 0.5;
+            }
+
+            100% {
+                transform: scale(0);
+                opacity: 0;
+            }
+        }
+
+        .net {
+            position: absolute;
+            width: 100px;
+            height: 100px;
+            pointer-events: none;
+            /* Touches handled by canvas events */
+            z-index: 20;
+            filter: drop-shadow(0 10px 5px rgba(0, 0, 0, 0.3));
+        }
+
+        .net-visual {
+            width: 100%;
+            height: 100%;
+        }
+
+        /* UI Elements */
+        .ui-panel {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            z-index: 50;
+            padding-top: max(env(safe-area-inset-top), 20px);
+            pointer-events: none;
+            /* Let clicks pass through mostly */
+        }
+
+        .top-bar {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+            pointer-events: auto;
+        }
+
+        .word-container {
+            background: rgba(255, 255, 255, 0.9);
+            border: 4px solid #795548;
+            border-radius: 20px;
+            padding: 10px 30px;
+            margin-top: 10px;
+            display: flex;
+            gap: 10px;
+            box-shadow: 0 4px 0 rgba(0, 0, 0, 0.2);
+            pointer-events: auto;
+        }
+
+        .letter-slot {
+            width: 40px;
+            height: 50px;
+            border-bottom: 4px solid #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 2rem;
+            color: #333;
+        }
+
+        .letter-slot.filled {
+            animation: pop-in 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        @keyframes pop-in {
+            0% {
+                transform: scale(0);
+            }
+
+            80% {
+                transform: scale(1.2);
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        .icon-btn {
+            background: white;
+            border: 3px solid black;
+            border-radius: 12px;
+            padding: 8px 12px;
+            font-size: 1.2rem;
+            color: black;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            box-shadow: 0 4px 0 rgba(0, 0, 0, 0.2);
+            cursor: pointer;
+            pointer-events: auto;
+        }
+
+        .icon-btn:active {
+            transform: translateY(4px);
+            box-shadow: 0 0 0 rgba(0, 0, 0, 0.2);
+        }
+
+        .overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.85);
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .big-btn {
+            background: #2ecc71;
+            border: 4px solid white;
+            color: white;
+            font-size: 2rem;
+            padding: 15px 40px;
+            border-radius: 50px;
+            margin-top: 20px;
+            box-shadow: 0 6px 0 rgba(0, 0, 0, 0.3);
+            text-shadow: 2px 2px 0 rgba(0, 0, 0, 0.2);
+            font-family: 'Bungee', cursive;
+        }
+
+        .big-btn:active {
+            transform: translateY(6px);
+            box-shadow: 0 0 0 rgba(0, 0, 0, 0);
+        }
+
+        .target-word-display {
+            font-size: 2rem;
+            color: #FFD700;
+            text-shadow: 2px 2px 0 #000;
+            margin-bottom: 5px;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 5px 20px;
+            border-radius: 15px;
+            border: 2px solid white;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="game-canvas" id="gameCanvas">
+        <div class="tree-bg"></div>
+
+        <div class="ui-panel">
+            <div class="top-bar">
+                <a href="index.html" class="icon-btn">
+                    <span>🏠</span> HUB
+                </a>
+                <div class="icon-btn" onclick="toggleMute()">
+                    <span id="sound-icon">🔊</span>
+                </div>
+            </div>
+
+            <div id="target-word" class="target-word-display"></div>
+
+            <div class="word-container" id="word-display">
+                <!-- Letter slots generated here -->
+            </div>
+
+            <div style="margin-top: 10px; color: white; text-shadow: 2px 2px 0 #000; font-size: 1.2rem;">
+                Score: <span id="score-val">0</span>
+            </div>
+        </div>
+
+        <!-- Player Net -->
+        <div id="net" class="net">
+            <svg class="net-visual" viewBox="0 0 100 100">
+                <!-- Handle -->
+                <rect x="45" y="60" width="10" height="40" fill="#8d6e63" stroke="#3e2723" stroke-width="2" />
+                <!-- Rim -->
+                <ellipse cx="50" cy="35" rx="40" ry="25" fill="rgba(255,255,255,0.1)" stroke="#dcdcdc"
+                    stroke-width="3" />
+                <!-- Mesh -->
+                <path d="M15,35 Q50,90 85,35" fill="none" stroke="#dcdcdc" stroke-width="1" />
+                <path d="M25,25 L75,75 M75,25 L25,75" stroke="#dcdcdc" stroke-width="1" opacity="0.5" />
+            </svg>
+        </div>
+
+        <!-- Butterflies container -->
+        <div id="butterflies-layer"></div>
+
+        <!-- Start Overlay -->
+        <div id="start-overlay" class="overlay">
+            <h1 class="text-5xl text-yellow-400 mb-4 drop-shadow-md">SPELLING SAFARI</h1>
+            <p class="text-white text-xl mb-8 max-w-xs">Drag your net to catch the correct letters to spell the words!
+            </p>
+            <button class="big-btn" onclick="startGame()">START SAFARI</button>
+        </div>
+
+        <!-- Win Overlay -->
+        <div id="win-overlay" class="overlay hidden">
+            <h1 class="text-5xl text-yellow-400 mb-4">SAFARI COMPLETE!</h1>
+            <p class="text-white text-2xl mb-4">Words Found: <span id="final-score">0</span></p>
+            <button class="big-btn" onclick="resetGame()">PLAY AGAIN</button>
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const net = document.getElementById('net');
+        const butterfliesLayer = document.getElementById('butterflies-layer');
+        const wordDisplay = document.getElementById('word-display');
+        const startOverlay = document.getElementById('start-overlay');
+        const winOverlay = document.getElementById('win-overlay');
+        const scoreVal = document.getElementById('score-val');
+        const soundIcon = document.getElementById('sound-icon');
+
+        // Game State
+        const words = ["BECAUSE", "ISLAND", "FRIEND", "SCHOOL", "HOUSE", "PEOPLE", "WATER", "AGAIN"];
+        let currentWordIdx = 0;
+        let currentWord = "";
+        let foundLetters = [];
+        let butterflies = []; // { el, x, y, dx, dy, char }
+        let netPos = { x: window.innerWidth / 2, y: window.innerHeight - 150 };
+        let score = 0;
+        let gameActive = false;
+        let spawnTimer = 0;
+        let isMuted = false;
+        let audioCtx = null;
+
+        // ----- Audio System -----
+        function initAudio() {
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+            if (audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+        }
+
+        function playSound(type) {
+            if (!audioCtx || isMuted) return;
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            const now = audioCtx.currentTime;
+
+            if (type === 'catch') {
+                osc.frequency.setValueAtTime(600, now);
+                osc.frequency.exponentialRampToValueAtTime(1200, now + 0.1);
+                gain.gain.setValueAtTime(0.3, now);
+                gain.gain.linearRampToValueAtTime(0, now + 0.2);
+                osc.type = 'sine';
+                osc.start(now);
+                osc.stop(now + 0.2);
+            } else if (type === 'wrong') {
+                osc.frequency.setValueAtTime(200, now);
+                osc.frequency.linearRampToValueAtTime(100, now + 0.2);
+                gain.gain.setValueAtTime(0.3, now);
+                gain.gain.linearRampToValueAtTime(0, now + 0.3);
+                osc.type = 'sawtooth';
+                osc.start(now);
+                osc.stop(now + 0.3);
+            } else if (type === 'win') {
+                // Arpeggio
+                [523.25, 659.25, 783.99, 1046.50].forEach((freq, i) => {
+                    const o = audioCtx.createOscillator();
+                    const g = audioCtx.createGain();
+                    o.frequency.value = freq;
+                    o.type = 'square';
+                    g.gain.setValueAtTime(0.1, now + i * 0.1);
+                    g.gain.linearRampToValueAtTime(0, now + i * 0.1 + 0.3);
+                    o.connect(g);
+                    g.connect(audioCtx.destination);
+                    o.start(now + i * 0.1);
+                    o.stop(now + i * 0.1 + 0.3);
+                });
+            }
+
+            if (type !== 'win') {
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+            }
+        }
+
+        function toggleMute() {
+            isMuted = !isMuted;
+            soundIcon.textContent = isMuted ? "🔇" : "🔊";
+        }
+
+        // ----- Game Logic -----
+
+        function startGame() {
+            initAudio();
+            startOverlay.classList.add('hidden');
+            winOverlay.classList.add('hidden');
+            score = 0;
+            scoreVal.textContent = "0";
+            currentWordIdx = 0;
+            loadWord();
+            gameActive = true;
+            animate();
+        }
+
+        function resetGame() {
+            startGame();
+        }
+
+        function loadWord() {
+            if (currentWordIdx >= words.length) {
+                gameActive = false;
+                document.getElementById('final-score').textContent = score;
+                winOverlay.classList.remove('hidden');
+                playSound('win');
+                return;
+            }
+
+            currentWord = words[currentWordIdx];
+            document.getElementById('target-word').textContent = `FIND: ${currentWord}`;
+            foundLetters = new Array(currentWord.length).fill(false);
+
+            // Setup UI
+            wordDisplay.innerHTML = '';
+            currentWord.split('').forEach(char => {
+                const slot = document.createElement('div');
+                slot.className = 'letter-slot';
+                // hidden text? No, empty until found
+                slot.dataset.char = char;
+                wordDisplay.appendChild(slot);
+            });
+
+            // Clear existing butterflies
+            butterflies.forEach(b => b.el.remove());
+            butterflies = [];
+
+            // Immediate spawn of needed letters
+            spawnButterfly(getTargetLetter());
+            spawnButterfly();
+            spawnButterfly();
+        }
+
+        function getTargetLetter() {
+            // Find first unfound letter
+            for (let i = 0; i < currentWord.length; i++) {
+                if (!foundLetters[i]) return currentWord[i];
+            }
+            return null; // Should not happen if word incomplete
+        }
+
+        function spawnButterfly(forceChar = null) {
+            const el = document.createElement('div');
+            el.className = 'butterfly';
+
+            // Random char if not forced, skewed towards needed letters
+            let char = forceChar;
+            if (!char) {
+                if (Math.random() < 0.4) {
+                    // 40% chance to be a needed letter
+                    const needed = currentWord.split('').filter((_, i) => !foundLetters[i]);
+                    if (needed.length > 0) char = needed[Math.floor(Math.random() * needed.length)];
+                }
+                if (!char) {
+                    // Random A-Z
+                    const abc = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+                    char = abc[Math.floor(Math.random() * abc.length)];
+                }
+            }
+
+            // SVG Butterfly
+            const hue = Math.floor(Math.random() * 360);
+            el.innerHTML = `
+            <svg viewBox="0 0 100 100" style="fill: hsl(${hue}, 70%, 60%)">
+                <path d="M50,50 Q20,10 10,40 Q5,70 50,90 Q95,70 90,40 Q80,10 50,50" />
+                <path d="M50,50 Q30,30 20,50 Q30,70 50,60" fill="rgba(255,255,255,0.3)"/>
+                <path d="M50,50 Q70,30 80,50 Q70,70 50,60" fill="rgba(255,255,255,0.3)"/>
+            </svg>
+            <span>${char}</span>
+        `;
+
+            butterfliesLayer.appendChild(el);
+
+            const x = Math.random() * (window.innerWidth - 60);
+            const y = -60; // Start above screen
+
+            butterflies.push({
+                el,
+                x,
+                y,
+                dx: (Math.random() - 0.5) * 2,
+                dy: 1 + Math.random() * 2, // Falling speed
+                char,
+                wobble: Math.random() * Math.PI * 2
+            });
+        }
+
+        // ----- Input Handling -----
+
+        function moveNet(cx, cy) {
+            netPos.x = cx;
+            netPos.y = cy;
+            // Clamp to screen
+            netPos.x = Math.max(0, Math.min(window.innerWidth, netPos.x));
+            netPos.y = Math.max(0, Math.min(window.innerHeight, netPos.y));
+
+            net.style.left = (netPos.x - 50) + 'px';
+            net.style.top = (netPos.y - 50) + 'px';
+        }
+
+        canvas.addEventListener('touchmove', (e) => {
+            e.preventDefault();
+            const touch = e.touches[0];
+            moveNet(touch.clientX, touch.clientY);
+        }, { passive: false });
+
+        canvas.addEventListener('mousemove', (e) => {
+            if (e.buttons === 1) { // Only drag if clicked
+                moveNet(e.clientX, e.clientY);
+            }
+        });
+
+        // Initial net position
+        moveNet(window.innerWidth / 2, window.innerHeight * 0.7);
+
+        // ----- Game Loop -----
+
+        function animate() {
+            if (!gameActive) return;
+
+            // Spawn logic
+            spawnTimer++;
+            if (spawnTimer > 100) { // spawn every ~1.6s
+                spawnButterfly();
+                spawnTimer = 0;
+            }
+
+            // Update butterflies
+            for (let i = butterflies.length - 1; i >= 0; i--) {
+                const b = butterflies[i];
+
+                // Movement
+                b.y += b.dy;
+                b.x += b.dx + Math.sin(b.y * 0.05 + b.wobble) * 0.5;
+
+                b.el.style.transform = `translate(${b.x}px, ${b.y}px)`;
+
+                // Collision with Net
+                const dx = (netPos.x) - (b.x + 30); // center roughly
+                const dy = (netPos.y) - (b.y + 30);
+                const dist = Math.sqrt(dx * dx + dy * dy);
+
+                if (dist < 50) { // Catch radius
+                    handleCatch(b, i);
+                    continue;
+                }
+
+                // Remove if off screen
+                if (b.y > window.innerHeight) {
+                    b.el.remove();
+                    butterflies.splice(i, 1);
+                }
+            }
+
+            requestAnimationFrame(animate);
+        }
+
+        function handleCatch(butterfly, idx) {
+            butterfly.el.remove();
+            butterflies.splice(idx, 1);
+
+            let found = false;
+            // Check if letter matches any needed slot
+            const slots = document.querySelectorAll('.letter-slot');
+            for (let i = 0; i < currentWord.length; i++) {
+                if (!foundLetters[i] && currentWord[i] === butterfly.char) {
+                    foundLetters[i] = true;
+                    slots[i].textContent = butterfly.char;
+                    slots[i].classList.add('filled');
+                    found = true;
+                    break; // One at a time
+                }
+            }
+
+            if (found) {
+                playSound('catch');
+                // Check word complete
+                if (foundLetters.every(x => x)) {
+                    score++;
+                    scoreVal.textContent = score;
+                    playSound('win');
+                    setTimeout(() => {
+                        currentWordIdx++;
+                        loadWord();
+                    }, 1000);
+                }
+            } else {
+                playSound('wrong');
+            }
+        }
+
+        window.addEventListener('resize', () => {
+            // simple resize handle
+        });
+
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Pizza Parlour Fractions</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Bungee&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --pizza-red: #e63946;
+            --pizza-white: #f1faee;
+            --pizza-crust: #e9c46a;
+            --pizza-green: #2a9d8f;
+        }
+
+        body,
+        html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            position: fixed;
+            font-family: 'Bungee', cursive;
+            background-color: var(--pizza-white);
+            user-select: none;
+            -webkit-user-select: none;
+            touch-action: none;
+        }
+
+        .game-canvas {
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at center, #fff 0%, #ffe0e0 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+        }
+
+        /* Checkered Tablecloth Pattern */
+        .tablecloth {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            height: 40%;
+            background-color: #e63946;
+            background-image:
+                linear-gradient(45deg, #d62839 25%, transparent 25%, transparent 75%, #d62839 75%, #d62839),
+                linear-gradient(45deg, #d62839 25%, transparent 25%, transparent 75%, #d62839 75%, #d62839);
+            background-position: 0 0, 20px 20px;
+            background-size: 40px 40px;
+            z-index: 5;
+            box-shadow: 0 -10px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .top-bar {
+            width: 100%;
+            padding: max(env(safe-area-inset-top), 20px) 20px 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 50;
+        }
+
+        .icon-btn {
+            background: white;
+            border: 3px solid black;
+            border-radius: 12px;
+            padding: 8px 12px;
+            font-size: 1.2rem;
+            color: black;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            box-shadow: 0 4px 0 rgba(0, 0, 0, 0.2);
+            cursor: pointer;
+        }
+
+        .icon-btn:active {
+            transform: translateY(4px);
+            box-shadow: 0 0 0 rgba(0, 0, 0, 0.2);
+        }
+
+        .order-ticket {
+            background: #fff;
+            border: 2px dashed #999;
+            padding: 15px;
+            margin-top: 10px;
+            width: 90%;
+            max-width: 400px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            transform: rotate(-1deg);
+            z-index: 10;
+        }
+
+        .order-text {
+            font-size: 1.5rem;
+            color: #333;
+            line-height: 1.4;
+        }
+
+        .highlight {
+            color: var(--pizza-red);
+            font-size: 1.8rem;
+        }
+
+        .pizza-container {
+            position: relative;
+            width: 300px;
+            height: 300px;
+            margin-top: 20px;
+            z-index: 20;
+        }
+
+        .pizza-base {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: #e9c46a;
+            /* Crust */
+            position: relative;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .cheese {
+            width: 90%;
+            height: 90%;
+            border-radius: 50%;
+            background: #f4d35e;
+            position: absolute;
+        }
+
+        .slice-lines {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+        }
+
+        .cut-line {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 100%;
+            height: 4px;
+            background: rgba(139, 69, 19, 0.3);
+            transform-origin: 0 50%;
+        }
+
+        .topping-area {
+            position: absolute;
+            inset: 0;
+        }
+
+        .topping-item {
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+            animation: drop-in 0.3s ease-out;
+        }
+
+        @keyframes drop-in {
+            0% {
+                transform: translate(-50%, -50%) scale(3);
+                opacity: 0;
+            }
+
+            100% {
+                transform: translate(-50%, -50%) scale(1);
+                opacity: 1;
+            }
+        }
+
+        .controls {
+            position: absolute;
+            bottom: 30px;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            z-index: 50;
+            padding-bottom: env(safe-area-inset-bottom);
+        }
+
+        .tool-btn {
+            width: 80px;
+            height: 80px;
+            background: white;
+            border-radius: 50%;
+            border: 4px solid var(--pizza-red);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 2.5rem;
+            box-shadow: 0 6px 0 #9e2a2b;
+            transition: transform 0.1s;
+        }
+
+        .tool-btn.active {
+            background: #ffeb3b;
+            transform: scale(1.1);
+        }
+
+        .tool-btn:active {
+            transform: translateY(4px);
+            box-shadow: 0 2px 0 #9e2a2b;
+        }
+
+        .knife-mode {
+            cursor: crosshair;
+        }
+
+        .topping-mode {
+            cursor: copy;
+        }
+
+        /* Overlay */
+        .overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.85);
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .big-btn {
+            background: var(--pizza-green);
+            border: 4px solid white;
+            color: white;
+            font-size: 2rem;
+            padding: 15px 40px;
+            border-radius: 50px;
+            margin-top: 20px;
+            box-shadow: 0 6px 0 #1b635a;
+            text-shadow: 2px 2px 0 rgba(0, 0, 0, 0.2);
+            font-family: 'Bungee', cursive;
+        }
+
+        .big-btn:active {
+            transform: translateY(6px);
+            box-shadow: 0 0 0 #1b635a;
+        }
+
+        .submit-btn {
+            position: absolute;
+            bottom: 140px;
+            right: 20px;
+            background: var(--pizza-green);
+            border: 3px solid white;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-size: 1.2rem;
+            font-family: 'Bungee', cursive;
+            box-shadow: 0 4px 0 #1b635a;
+            z-index: 50;
+        }
+
+        .submit-btn:active {
+            transform: translateY(4px);
+            box-shadow: 0 0 0 #1b635a;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="game-canvas">
+        <div class="tablecloth"></div>
+
+        <div class="top-bar">
+            <a href="index.html" class="icon-btn">
+                <span>🏠</span> HUB
+            </a>
+            <div class="icon-btn" onclick="toggleMute()">
+                <span id="sound-icon">🔊</span>
+            </div>
+        </div>
+
+        <div class="order-ticket">
+            <div class="order-text" id="order-text">
+                Customer wants:<br>
+                <span class="highlight">1/2</span> Pepperoni<br>
+                <span class="highlight">1/2</span> Plain
+            </div>
+        </div>
+
+        <div class="pizza-container" id="pizza-container">
+            <div class="pizza-base">
+                <div class="cheese"></div>
+            </div>
+            <div class="slice-lines" id="slice-lines"></div>
+            <div class="topping-area" id="topping-area"></div>
+        </div>
+
+        <button class="submit-btn" onclick="checkOrder()">SERVE!</button>
+
+        <div class="controls">
+            <div class="tool-btn" id="knife-tool" onclick="selectTool('knife')">🔪</div>
+            <div class="tool-btn" id="pep-tool" onclick="selectTool('pep')">🍕</div>
+            <div class="tool-btn" id="mush-tool" onclick="selectTool('mush')">🍄</div>
+        </div>
+
+        <!-- Start Overlay -->
+        <div id="start-overlay" class="overlay">
+            <h1 class="text-5xl text-red-500 mb-4 drop-shadow-md bg-white px-4 py-2 rounded-xl -rotate-2">PIZZA PARLOUR
+            </h1>
+            <p class="text-white text-xl mb-8 max-w-xs">Slice the pizza and add toppings to match the fractions!</p>
+            <button class="big-btn" onclick="startGame()">START COOKING</button>
+        </div>
+
+        <!-- Result Overlay -->
+        <div id="result-overlay" class="overlay hidden">
+            <h1 class="text-5xl text-yellow-400 mb-4" id="result-title">DELICIOUS!</h1>
+            <p class="text-white text-2xl mb-4">Score: <span id="score-val">0</span></p>
+            <button class="big-btn" onclick="nextRound()">NEXT ORDER</button>
+        </div>
+    </div>
+
+    <script>
+        const pizzaContainer = document.getElementById('pizza-container');
+        const sliceLines = document.getElementById('slice-lines');
+        const toppingArea = document.getElementById('topping-area');
+        const orderText = document.getElementById('order-text');
+        const startOverlay = document.getElementById('start-overlay');
+        const resultOverlay = document.getElementById('result-overlay');
+        const resultTitle = document.getElementById('result-title');
+        const scoreVal = document.getElementById('score-val');
+        const soundIcon = document.getElementById('sound-icon');
+
+        // Tools
+        let currentTool = 'knife'; // knife, pep, mush
+        const tools = {
+            knife: document.getElementById('knife-tool'),
+            pep: document.getElementById('pep-tool'),
+            mush: document.getElementById('mush-tool')
+        };
+
+        // Game State
+        let slices = 1; // 1, 2, 4
+        let toppings = []; // { type, angle, r }
+        let currentOrder = null;
+        let score = 0;
+        let isMuted = false;
+        let audioCtx = null;
+
+        // ----- Audio -----
+        function initAudio() {
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+            if (audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+        }
+
+        function playSound(type) {
+            if (!audioCtx || isMuted) return;
+            const now = audioCtx.currentTime;
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+
+            if (type === 'slice') {
+                osc.frequency.setValueAtTime(800, now);
+                osc.frequency.exponentialRampToValueAtTime(100, now + 0.1);
+                gain.gain.setValueAtTime(0.5, now);
+                gain.gain.linearRampToValueAtTime(0, now + 0.1);
+                osc.type = 'sawtooth';
+            } else if (type === 'top') {
+                osc.frequency.setValueAtTime(400 + Math.random() * 200, now);
+                gain.gain.setValueAtTime(0.3, now);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.1);
+                osc.type = 'triangle';
+            } else if (type === 'bell') {
+                osc.frequency.setValueAtTime(1500, now);
+                gain.gain.setValueAtTime(0.1, now);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 1.5);
+                osc.type = 'sine';
+                const osc2 = audioCtx.createOscillator();
+                osc2.frequency.setValueAtTime(1505, now); // slight detune
+                osc2.type = 'sine';
+                osc2.connect(gain);
+                osc2.start(now); osc2.stop(now + 1.5);
+            } else if (type === 'error') {
+                osc.frequency.setValueAtTime(150, now);
+                osc.type = 'sawtooth';
+                gain.gain.setValueAtTime(0.5, now);
+                gain.gain.linearRampToValueAtTime(0, now + 0.3);
+            }
+
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.start(now);
+            if (type !== 'bell') osc.stop(now + 0.3);
+        }
+
+        function toggleMute() {
+            isMuted = !isMuted;
+            soundIcon.textContent = isMuted ? "🔇" : "🔊";
+        }
+
+        // ----- Logic -----
+
+        function selectTool(tool) {
+            currentTool = tool;
+            Object.values(tools).forEach(el => el.classList.remove('active'));
+            tools[tool].classList.add('active');
+        }
+
+        function startGame() {
+            initAudio(); // first user interaction
+            selectTool('knife');
+            startOverlay.classList.add('hidden');
+            newOrder();
+        }
+
+        function nextRound() {
+            resultOverlay.classList.add('hidden');
+            newOrder();
+        }
+
+        function newOrder() {
+            // Reset Pizza
+            slices = 1;
+            toppings = [];
+            updatePizzaVisual();
+
+            // Generate Order
+            // Difficulty: Simple fractions: 1/1, 1/2, 1/4
+            const denoms = [2, 4];
+            const denom = denoms[Math.floor(Math.random() * denoms.length)];
+            const num = Math.floor(Math.random() * (denom - 1)) + 1; // 1 to denom
+
+            const mainTopping = Math.random() > 0.5 ? 'Pepperoni' : 'Mushroom';
+
+            currentOrder = {
+                denom,
+                num,
+                type: mainTopping,
+                text: `${num}/${denom} ${mainTopping}`
+            };
+
+            const rest = denom - num;
+            let orderHtml = `Customer wants:<br><span class="highlight">${num}/${denom}</span> ${mainTopping}`;
+            if (rest > 0) orderHtml += `<br><span class="highlight">${rest}/${denom}</span> Plain`;
+
+            orderText.innerHTML = orderHtml;
+        }
+
+        function updatePizzaVisual() {
+            // Draw cuts
+            sliceLines.innerHTML = '';
+            toppingArea.innerHTML = '';
+
+            if (slices >= 2) {
+                const line = document.createElement('div');
+                line.className = 'cut-line';
+                line.style.transform = 'translate(-50%, -50%) rotate(90deg)';
+                sliceLines.appendChild(line);
+            }
+            if (slices >= 4) {
+                const line = document.createElement('div');
+                line.className = 'cut-line';
+                line.style.transform = 'translate(-50%, -50%) rotate(0deg)';
+                sliceLines.appendChild(line);
+            }
+        }
+
+        // Interaction
+        pizzaContainer.addEventListener('click', (e) => {
+            if (!currentOrder) return;
+
+            if (currentTool === 'knife') {
+                if (slices < 4) {
+                    slices *= 2;
+                    playSound('slice');
+                    updatePizzaVisual();
+                    // re-render toppings?
+                    renderToppings();
+                }
+            } else {
+                // Add topping
+                const rect = pizzaContainer.getBoundingClientRect();
+                const x = e.clientX - rect.left - rect.width / 2;
+                const y = e.clientY - rect.top - rect.height / 2;
+                const r = Math.sqrt(x * x + y * y);
+                const angle = Math.atan2(y, x);
+
+                if (r < rect.width / 2 - 10) { // Inside pizza
+                    const type = currentTool === 'pep' ? 'Pepperoni' : 'Mushroom';
+                    toppings.push({ x, y, type });
+                    renderToppings();
+                    playSound('top');
+                }
+            }
+        });
+
+        function renderToppings() {
+            toppingArea.innerHTML = '';
+            toppings.forEach(t => {
+                const el = document.createElement('div');
+                el.className = 'topping-item';
+                el.innerText = t.type === 'Pepperoni' ? '🍕' : '🍄';
+                // Adjust position back to relative to container center
+                el.style.left = (t.x + 150) + 'px'; // 150 is radius
+                el.style.top = (t.y + 150) + 'px';
+                toppingArea.appendChild(el);
+            });
+        }
+
+        function checkOrder() {
+            // check slices
+            if (slices !== currentOrder.denom) {
+                fail("Wrong number of slices!");
+                return;
+            }
+
+            // check topping distribution
+            // map toppings to sectors
+            // sectors:
+            // 2 slices: Top(-PI..0) and Bottom(0..PI) ? No simplistic
+            // Let's use standard angles. 
+            // 2 slices: Cut vertical. Left (-PI to -PI/2 & PI/2 to PI), Right (-PI/2 to PI/2).
+            // Actually visuals are:
+            // 2 slices: Vertical cut. (-90 to 90 is Right, 90 to 270 is Left)
+            // 4 slices: Cross cut.
+
+            let sectors = new Array(slices).fill(0); // Count of target topping per sector
+
+            toppings.forEach(t => {
+                // angle is -PI to PI
+                let angle = Math.atan2(t.y, t.x); // -PI to PI
+                if (angle < 0) angle += Math.PI * 2; // 0 to 2PI
+
+                // Rotated visual:
+                // CSS rotates lines. 
+                // 2 slices: Cut is Vertical (90deg in CSS relative to horiz? No, css is rotate(90deg)).
+                // Initial line is horiz. rotates 90 -> Vertical.
+                // Areas: Left (PI/2 to 3PI/2), Right ( -PI/2 to PI/2 ... )
+
+                // Standardize sector mapping
+                let sectorIdx = 0;
+                if (slices === 2) {
+                    // Vertical cut. Right side (0) vs Left side (1) or Top/Bottom?
+                    // Visual shows Vertical cut.
+                    // Right: 0 < angle < PI OR angle > 0... wait.
+                    // Let's rely on simple normalized angle chunks.
+                    // 2 slices = chunks of PI.
+                    // 4 slices = chunks of PI/2.
+                    // Visual alignment:
+                    // 2 slices: Cut goes Top-Down. Right Side (0), Left Side (1).
+                    // Right is -90 to 90 (or 270 to 90). Left is 90 to 270.
+
+                    // Let's adjust angle 
+                    let deg = angle * 180 / Math.PI; // 0 to 360
+
+                    // Right: 270-360 or 0-90. Left: 90-270.
+                    if (deg >= 90 && deg < 270) sectorIdx = 1;
+                    else sectorIdx = 0;
+
+                } else if (slices === 4) {
+                    // 4 Quadrants. 
+                    // Bottom-Right (0-90), Bottom-Left (90-180), Top-Left (180-270), Top-Right (270-360)
+                    let deg = angle * 180 / Math.PI;
+                    sectorIdx = Math.floor(deg / 90);
+                }
+
+                if (t.type === currentOrder.type) {
+                    sectors[sectorIdx]++;
+                } else {
+                    // Wrong topping type present?
+                    // Allowed but counts as 0 for target
+                    sectors[sectorIdx] = -999; // Penalty for wrong topping on slice?
+                    // Simple version: just count target types. But user shouldn't mix.
+                    // Let's spoil the slice if wrong topping exists.
+                }
+            });
+
+            // Check how many sectors have the topping (at least 1)
+            let correctSectors = 0;
+            let incorrectSectors = 0;
+
+            sectors.forEach(count => {
+                if (count > 0) correctSectors++;
+                else if (count < 0) incorrectSectors++; // spoiled
+            });
+
+            if (incorrectSectors > 0 && correctSectors === currentOrder.num) {
+                // Maybe allowed if mixed? No, strictly "Plain" means empty.
+                // If we have plain slices, they must be empty or different?
+                // Prompt says "1/2 Pepperoni, 1/2 Plain". Plain means NO toppings.
+                fail("Plain slices must be empty!");
+                return;
+            }
+
+            if (correctSectors === currentOrder.num) {
+                // Are other sectors empty?
+                // "Plain" implies empty.
+                // Check total toppings vs relevant toppings.
+
+                // Any sector that shouldn't have toppings?
+                // We need exactly num sectors with target topping.
+                // And exactly (denom - num) sectors with 0 toppings.
+
+                // Check if any "Plain" sectors have stuff
+                /* 
+                   Actually simpler: 
+                   We found 'correctSectors' slices with the target topping.
+                   If that equals requested num...
+                   AND we ensure we didn't put anything on the others.
+                */
+
+                // Total slices with ANY topping
+                let slicesWithAny = new Set();
+                toppings.forEach(t => {
+                    let angle = Math.atan2(t.y, t.x);
+                    if (angle < 0) angle += Math.PI * 2;
+                    let deg = angle * 180 / Math.PI;
+                    let idx = 0;
+                    if (slices === 2) {
+                        if (deg >= 90 && deg < 270) idx = 1; else idx = 0;
+                    } else {
+                        idx = Math.floor(deg / 90);
+                    }
+                    slicesWithAny.add(idx);
+                });
+
+                // If we have 'correctSectors' that are good, and 'slicesWithAny.size' is same...
+                // means only the good sectors have toppings.
+                if (correctSectors === currentOrder.num && slicesWithAny.size === correctSectors) {
+                    win();
+                } else {
+                    fail("Make sure Plain slices are empty!");
+                }
+
+            } else {
+                fail(`Need ${currentOrder.num} slice(s) with ${currentOrder.type}!`);
+            }
+        }
+
+        function win() {
+            score += 10;
+            scoreVal.textContent = score;
+            resultTitle.textContent = "DELICIOUS!";
+            resultTitle.className = "text-5xl text-yellow-400 mb-4";
+            resultOverlay.classList.remove('hidden');
+            playSound('bell');
+        }
+
+        function fail(msg) {
+            resultTitle.textContent = "OOPS!";
+            resultTitle.className = "text-5xl text-red-500 mb-4";
+            // Show message? default overlay structure doesn't have msg slot, reusing logic or add it
+            // Just quick fail/retry capable?
+            // Let's just update title and score
+            resultOverlay.classList.remove('hidden');
+            playSound('error');
+        }
+
+    </script>
+</body>
+
+</html>

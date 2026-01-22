@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -14,7 +15,8 @@
             --duck-yellow: #ffb703;
         }
 
-        body, html {
+        body,
+        html {
             margin: 0;
             padding: 0;
             width: 100%;
@@ -50,7 +52,7 @@
             width: 100%;
             height: 50px;
             background: repeating-linear-gradient(90deg, var(--carnival-red), var(--carnival-red) 40px, var(--carnival-white) 40px, var(--carnival-white) 80px);
-            box-shadow: 0 6px 15px rgba(0,0,0,0.3);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
             z-index: 10;
         }
 
@@ -67,7 +69,7 @@
         .duck-body-container {
             width: 90px;
             height: 80px;
-            filter: drop-shadow(0 6px 2px rgba(0,0,0,0.2));
+            filter: drop-shadow(0 6px 2px rgba(0, 0, 0, 0.2));
         }
 
         .problem-sign {
@@ -81,8 +83,8 @@
             white-space: nowrap;
             margin-bottom: -10px;
             z-index: 6;
-            box-shadow: 0 4px 0 rgba(0,0,0,0.2);
-            text-shadow: 1px 1px 0px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 0 rgba(0, 0, 0, 0.2);
+            text-shadow: 1px 1px 0px rgba(0, 0, 0, 0.1);
         }
 
         @media (min-width: 640px) {
@@ -90,8 +92,8 @@
                 border-width: 6px;
                 padding: 6px 18px;
                 font-size: 2.2rem;
-                box-shadow: 0 6px 0 rgba(0,0,0,0.2);
-                text-shadow: 2px 2px 0px rgba(0,0,0,0.1);
+                box-shadow: 0 6px 0 rgba(0, 0, 0, 0.2);
+                text-shadow: 2px 2px 0px rgba(0, 0, 0, 0.1);
             }
         }
 
@@ -105,8 +107,13 @@
         }
 
         @keyframes duck-jump {
-            from { transform: translateY(0); }
-            to { transform: translateY(-35px); }
+            from {
+                transform: translateY(0);
+            }
+
+            to {
+                transform: translateY(-35px);
+            }
         }
 
         .controls {
@@ -161,7 +168,10 @@
             cursor: pointer;
             transition: transform 0.2s;
         }
-        .icon-btn:active { transform: scale(0.9); }
+
+        .icon-btn:active {
+            transform: scale(0.9);
+        }
 
         .muzzle-flash {
             position: absolute;
@@ -173,8 +183,13 @@
         }
 
         @keyframes flash-anim {
-            0% { opacity: 0.7; }
-            100% { opacity: 0; }
+            0% {
+                opacity: 0.7;
+            }
+
+            100% {
+                opacity: 0;
+            }
         }
 
         .popup-text {
@@ -198,10 +213,25 @@
         }
 
         @keyframes popup-anim {
-            0% { transform: scale(0.5) translateY(0); opacity: 0; }
-            15% { transform: scale(1.2) translateY(-20px); opacity: 1; }
-            80% { transform: scale(1.1) translateY(-30px); opacity: 1; }
-            100% { transform: scale(1) translateY(-60px); opacity: 0; }
+            0% {
+                transform: scale(0.5) translateY(0);
+                opacity: 0;
+            }
+
+            15% {
+                transform: scale(1.2) translateY(-20px);
+                opacity: 1;
+            }
+
+            80% {
+                transform: scale(1.1) translateY(-30px);
+                opacity: 1;
+            }
+
+            100% {
+                transform: scale(1) translateY(-60px);
+                opacity: 0;
+            }
         }
 
         /* Overlays */
@@ -217,342 +247,413 @@
             padding: 2rem;
             text-align: center;
         }
+
+        #fireworks-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 150;
+        }
     </style>
 </head>
+
 <body>
 
-<div class="game-canvas">
-    <!-- Start Screen Overlay -->
-    <div id="start-screen" class="game-overlay">
-        <h1 class="text-6xl text-yellow-400 mb-8 drop-shadow-lg">DUCK SHOT MATH</h1>
-        <div class="mb-12">
-            <svg width="120" height="120" viewBox="0 0 100 100">
-                <path d="M20,60 Q20,30 50,30 Q80,30 80,60 Q80,80 50,80 Q20,80 20,60" fill="#ffb703" stroke="#fff" stroke-width="4"/>
-                <circle cx="65" cy="50" r="5" fill="black" />
-                <path d="M80,60 L95,55 L80,50" fill="#fb8500" stroke="#fff" stroke-width="4"/>
-            </svg>
+    <div class="game-canvas">
+        <!-- Start Screen Overlay -->
+        <div id="start-screen" class="game-overlay">
+            <h1 class="text-6xl text-yellow-400 mb-8 drop-shadow-lg">DUCK SHOT MATH</h1>
+            <div class="mb-12">
+                <svg width="120" height="120" viewBox="0 0 100 100">
+                    <path d="M20,60 Q20,30 50,30 Q80,30 80,60 Q80,80 50,80 Q20,80 20,60" fill="#ffb703" stroke="#fff"
+                        stroke-width="4" />
+                    <circle cx="65" cy="50" r="5" fill="black" />
+                    <path d="M80,60 L95,55 L80,50" fill="#fb8500" stroke="#fff" stroke-width="4" />
+                </svg>
+            </div>
+            <button onclick="startGame()"
+                class="bg-green-500 border-4 border-white text-white px-16 py-6 rounded-3xl text-4xl shadow-2xl active:scale-95">
+                START GAME
+            </button>
+            <p class="text-white/60 mt-8 font-sans font-bold">MUSIC WILL PLAY AUTOMATICALLY</p>
         </div>
-        <button onclick="startGame()" class="bg-green-500 border-4 border-white text-white px-16 py-6 rounded-3xl text-4xl shadow-2xl active:scale-95">
-            START GAME
-        </button>
-        <p class="text-white/60 mt-8 font-sans font-bold">MUSIC WILL PLAY AUTOMATICALLY</p>
-    </div>
 
-    <!-- Header -->
-    <div class="flex justify-between items-center px-2 py-3 bg-white/10 z-30 gap-1 sm:gap-4 sm:px-6">
-        <a href="index.html" class="icon-btn bg-white px-2 py-1.5 rounded-xl border-2 sm:border-4 border-black flex items-center gap-1 shadow-lg no-underline shrink-0">
-            <span class="text-xl sm:text-2xl">🏠</span>
-            <span class="hidden sm:inline text-base sm:text-xl text-black">HUB</span>
-        </a>
+        <!-- Header -->
+        <div class="flex justify-between items-center px-2 py-3 bg-white/10 z-30 gap-1 sm:gap-4 sm:px-6">
+            <a href="index.html"
+                class="icon-btn bg-white px-2 py-1.5 rounded-xl border-2 sm:border-4 border-black flex items-center gap-1 shadow-lg no-underline shrink-0">
+                <span class="text-xl sm:text-2xl">🏠</span>
+                <span class="hidden sm:inline text-base sm:text-xl text-black">HUB</span>
+            </a>
 
-        <div class="flex items-center gap-1 sm:gap-2">
-            <select id="table-select" onchange="resetGame()" class="bg-white px-2 py-1 rounded-xl border-2 sm:border-4 border-black font-black text-sm sm:text-lg focus:outline-none shadow-lg appearance-none cursor-pointer">
-                <option value="all">ALL</option>
-                <option value="2">2x</option>
-                <option value="3">3x</option>
-                <option value="4">4x</option>
-                <option value="5" selected>5x</option>
-                <option value="6">6x</option>
-                <option value="7">7x</option>
-                <option value="8">8x</option>
-                <option value="9">9x</option>
-                <option value="10">10x</option>
-                <option value="11">11x</option>
-                <option value="12">12x</option>
-            </select>
+            <div class="flex items-center gap-1 sm:gap-2">
+                <select id="table-select" onchange="resetGame()"
+                    class="bg-white px-2 py-1 rounded-xl border-2 sm:border-4 border-black font-black text-sm sm:text-lg focus:outline-none shadow-lg appearance-none cursor-pointer">
+                    <option value="all">ALL Tables</option>
+                    <option value="2">2 Timestables</option>
+                    <option value="3">3 Timestables</option>
+                    <option value="4">4 Timestables</option>
+                    <option value="5" selected>5 Timestables</option>
+                    <option value="6">6 Timestables</option>
+                    <option value="7">7 Timestables</option>
+                    <option value="8">8 Timestables</option>
+                    <option value="9">9 Timestables</option>
+                    <option value="10">10 Timestables</option>
+                    <option value="11">11 Timestables</option>
+                    <option value="12">12 Timestables</option>
+                </select>
 
-            <div class="bg-white px-3 py-1 rounded-full border-2 sm:border-4 border-black flex items-center gap-1.5 shadow-lg">
-                <span class="text-xl sm:text-3xl">🐤</span>
-                <span id="score" class="text-xl sm:text-3xl font-black text-orange-600">0</span>
+                <div
+                    class="bg-white px-3 py-1 rounded-full border-2 sm:border-4 border-black flex items-center gap-1.5 shadow-lg">
+                    <span class="text-xl sm:text-3xl">🐤</span>
+                    <span id="score" class="text-xl sm:text-3xl font-black text-orange-600">0</span>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-1 sm:gap-2">
+                <div id="music-btn" onclick="toggleMusic()"
+                    class="icon-btn bg-white w-9 h-9 sm:w-12 sm:h-12 rounded-full border-2 sm:border-4 border-black flex items-center justify-center shadow-lg shrink-0">
+                    <span id="music-icon" class="text-xl sm:text-2xl">🎵</span>
+                </div>
+
+                <div id="diff-cycle-btn" onclick="cycleDifficulty()"
+                    class="icon-btn bg-white px-2 py-1 rounded-xl border-2 sm:border-4 border-black flex items-center gap-1 shadow-lg min-w-[70px] sm:min-w-[120px] justify-center">
+                    <span id="diff-icon" class="text-xl sm:text-2xl">👶</span>
+                    <span id="diff-text" class="text-xs sm:text-xl text-black">EASY</span>
+                </div>
             </div>
         </div>
 
-        <div class="flex items-center gap-1 sm:gap-2">
-            <div id="music-btn" onclick="toggleMusic()" class="icon-btn bg-white w-9 h-9 sm:w-12 sm:h-12 rounded-full border-2 sm:border-4 border-black flex items-center justify-center shadow-lg shrink-0">
-                <span id="music-icon" class="text-xl sm:text-2xl">🎵</span>
-            </div>
+        <!-- Gallery Area -->
+        <div class="gallery" id="gallery">
+            <div class="carnival-tent"></div>
+            <div id="flash" class="muzzle-flash"></div>
+            <canvas id="fireworks-canvas"></canvas>
+        </div>
 
-            <div id="diff-cycle-btn" onclick="cycleDifficulty()" class="icon-btn bg-white px-2 py-1 rounded-xl border-2 sm:border-4 border-black flex items-center gap-1 shadow-lg min-w-[70px] sm:min-w-[120px] justify-center">
-                <span id="diff-icon" class="text-xl sm:text-2xl">👶</span>
-                <span id="diff-text" class="text-xs sm:text-xl text-black">EASY</span>
-            </div>
+        <!-- Answer Buttons -->
+        <div class="controls">
+            <button class="ans-btn" onclick="checkAnswer(this)">?</button>
+            <button class="ans-btn" onclick="checkAnswer(this)">?</button>
+            <button class="ans-btn" onclick="checkAnswer(this)">?</button>
+            <button class="ans-btn" onclick="checkAnswer(this)">?</button>
+        </div>
+
+        <!-- Game Over Screen -->
+        <div id="end-screen" class="hidden game-overlay">
+            <h1 class="text-6xl mb-4 text-yellow-400">CARNIVAL CLOSED!</h1>
+            <p class="text-4xl mb-10 text-white">TOTAL HITS: <span id="final-score" class="text-white">0</span>/10</p>
+            <button onclick="restart()"
+                class="bg-green-500 border-4 border-white text-white px-12 py-5 rounded-3xl text-4xl shadow-2xl active:scale-95">
+                PLAY AGAIN
+            </button>
         </div>
     </div>
 
-    <!-- Gallery Area -->
-    <div class="gallery" id="gallery">
-        <div class="carnival-tent"></div>
-        <div id="flash" class="muzzle-flash"></div>
-    </div>
+    <script>
+        const gallery = document.getElementById('gallery');
+        const scoreEl = document.getElementById('score');
+        const diffIcon = document.getElementById('diff-icon');
+        const diffText = document.getElementById('diff-text');
+        const flashEl = document.getElementById('flash');
+        const endScreen = document.getElementById('end-screen');
+        const startScreen = document.getElementById('start-screen');
+        const buttons = document.querySelectorAll('.ans-btn');
+        const musicIcon = document.getElementById('music-icon');
+        const tableSelect = document.getElementById('table-select');
 
-    <!-- Answer Buttons -->
-    <div class="controls">
-        <button class="ans-btn" onclick="checkAnswer(this)">?</button>
-        <button class="ans-btn" onclick="checkAnswer(this)">?</button>
-        <button class="ans-btn" onclick="checkAnswer(this)">?</button>
-        <button class="ans-btn" onclick="checkAnswer(this)">?</button>
-    </div>
+        let score = 0;
+        let round = 1;
+        let currentDuck = null;
+        let currentAnswer = null;
+        let isMoving = false;
+        let isDashing = false;
+        let posX = 0;
+        let direction = 1;
+        let speed = 1.0;
+        let difficultyState = 'easy';
+        let gameActive = false;
+        let isMuted = false;
 
-    <!-- Game Over Screen -->
-    <div id="end-screen" class="hidden game-overlay">
-        <h1 class="text-6xl mb-4 text-yellow-400">CARNIVAL CLOSED!</h1>
-        <p class="text-4xl mb-10 text-white">TOTAL HITS: <span id="final-score" class="text-white">0</span>/10</p>
-        <button onclick="restart()" class="bg-green-500 border-4 border-white text-white px-12 py-5 rounded-3xl text-4xl shadow-2xl active:scale-95">
-            PLAY AGAIN
-        </button>
-    </div>
-</div>
+        let audioCtx = null;
+        let musicStarted = false;
+        const taunts = ["HA HA!", "BYE!", "SEE YA!", "TOO SLOW!", "MISS!", "OOPS!"];
 
-<script>
-    const gallery = document.getElementById('gallery');
-    const scoreEl = document.getElementById('score');
-    const diffIcon = document.getElementById('diff-icon');
-    const diffText = document.getElementById('diff-text');
-    const flashEl = document.getElementById('flash');
-    const endScreen = document.getElementById('end-screen');
-    const startScreen = document.getElementById('start-screen');
-    const buttons = document.querySelectorAll('.ans-btn');
-    const musicIcon = document.getElementById('music-icon');
-    const tableSelect = document.getElementById('table-select');
-
-    let score = 0;
-    let round = 1;
-    let currentDuck = null;
-    let currentAnswer = null;
-    let isMoving = false;
-    let isDashing = false;
-    let posX = 0;
-    let direction = 1;
-    let speed = 1.0;
-    let difficultyState = 'easy';
-    let gameActive = false;
-    let isMuted = false;
-
-    let audioCtx = null;
-    let musicStarted = false;
-    const taunts = ["HA HA!", "BYE!", "SEE YA!", "TOO SLOW!", "MISS!", "OOPS!"];
-
-    function initAudio() {
-        if (!audioCtx) {
-            audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        }
-        if (audioCtx.state === 'suspended') {
-            audioCtx.resume();
-        }
-        if (!musicStarted && !isMuted) {
-            startBGM();
-        }
-    }
-
-    function startBGM() {
-        if (musicStarted || isMuted) return;
-        musicStarted = true;
-
-        const melody = [
-            {n: 60, d: 1}, {n: 64, d: 1}, {n: 67, d: 1}, {n: 72, d: 1},
-            {n: 71, d: 1}, {n: 67, d: 1}, {n: 65, d: 1}, {n: 62, d: 1},
-            {n: 60, d: 1}, {n: 64, d: 1}, {n: 67, d: 1}, {n: 72, d: 1},
-            {n: 74, d: 2}, {n: 72, d: 2}
-        ];
-
-        let nextNoteTime = audioCtx.currentTime;
-        let noteIdx = 0;
-
-        function scheduler() {
-            if (!musicStarted) return;
-
-            // Determine tempo based on difficulty
-            let tempo = 130;
-            if (difficultyState === 'normal') tempo = 165;
-            if (difficultyState === 'hard') tempo = 205;
-
-            const secondsPerBeat = 60 / tempo;
-
-            while (nextNoteTime < audioCtx.currentTime + 0.1) {
-                if (!isMuted) {
-                    playNote(melody[noteIdx].n, nextNoteTime, melody[noteIdx].d * secondsPerBeat * 0.8);
-                }
-                nextNoteTime += melody[noteIdx].d * secondsPerBeat;
-                noteIdx = (noteIdx + 1) % melody.length;
+        function initAudio() {
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
             }
-            setTimeout(scheduler, 50);
+            if (audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+            if (!musicStarted && !isMuted) {
+                startBGM();
+            }
         }
 
-        function playNote(freq, time, dur) {
+        function startBGM() {
+            if (musicStarted || isMuted) return;
+            musicStarted = true;
+
+            const melody = [
+                { n: 60, d: 1 }, { n: 64, d: 1 }, { n: 67, d: 1 }, { n: 72, d: 1 },
+                { n: 71, d: 1 }, { n: 67, d: 1 }, { n: 65, d: 1 }, { n: 62, d: 1 },
+                { n: 60, d: 1 }, { n: 64, d: 1 }, { n: 67, d: 1 }, { n: 72, d: 1 },
+                { n: 74, d: 2 }, { n: 72, d: 2 }
+            ];
+
+            let nextNoteTime = audioCtx.currentTime;
+            let noteIdx = 0;
+
+            function scheduler() {
+                if (!musicStarted) return;
+
+                // Determine tempo based on difficulty
+                let tempo = 130;
+                if (difficultyState === 'normal') tempo = 165;
+                if (difficultyState === 'hard') tempo = 205;
+
+                const secondsPerBeat = 60 / tempo;
+
+                while (nextNoteTime < audioCtx.currentTime + 0.1) {
+                    if (!isMuted) {
+                        playNote(melody[noteIdx].n, nextNoteTime, melody[noteIdx].d * secondsPerBeat * 0.8);
+                    }
+                    nextNoteTime += melody[noteIdx].d * secondsPerBeat;
+                    noteIdx = (noteIdx + 1) % melody.length;
+                }
+                setTimeout(scheduler, 50);
+            }
+
+            function playNote(freq, time, dur) {
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(440 * Math.pow(2, (freq - 69) / 12), time);
+                gain.gain.setValueAtTime(0, time);
+                gain.gain.linearRampToValueAtTime(0.04, time + 0.05);
+                gain.gain.linearRampToValueAtTime(0, time + dur);
+                osc.connect(gain); gain.connect(audioCtx.destination);
+                osc.start(time); osc.stop(time + dur);
+            }
+
+            scheduler();
+        }
+
+        function stopBGM() {
+            musicStarted = false;
+        }
+
+        function playWinSound() {
+            if (!audioCtx) return;
+            const now = audioCtx.currentTime;
+            // Major arpeggio fanfare
+            [523.25, 659.25, 783.99, 1046.50, 1318.51].forEach((freq, i) => {
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.frequency.value = freq;
+                osc.type = 'square'; // Brighter sound
+                gain.gain.setValueAtTime(0.1, now + i * 0.1);
+                gain.gain.linearRampToValueAtTime(0, now + i * 0.1 + 0.4);
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start(now + i * 0.1);
+                osc.stop(now + i * 0.1 + 0.4);
+            });
+        }
+
+        function playLoseSound() {
+            if (!audioCtx) return;
+            const now = audioCtx.currentTime;
             const osc = audioCtx.createOscillator();
             const gain = audioCtx.createGain();
-            osc.type = 'triangle';
-            osc.frequency.setValueAtTime(440 * Math.pow(2, (freq - 69) / 12), time);
-            gain.gain.setValueAtTime(0, time);
-            gain.gain.linearRampToValueAtTime(0.04, time + 0.05);
-            gain.gain.linearRampToValueAtTime(0, time + dur);
+            // Sad slide down
+            osc.frequency.setValueAtTime(400, now);
+            osc.frequency.exponentialRampToValueAtTime(50, now + 0.8);
+            osc.type = 'sawtooth';
+
+            gain.gain.setValueAtTime(0.3, now);
+            gain.gain.linearRampToValueAtTime(0, now + 0.8);
+
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.start(now);
+            osc.stop(now + 0.8);
+        }
+
+        function startGame() {
+            initAudio();
+            startScreen.classList.add('hidden');
+            gameActive = true;
+            spawn();
+            gameLoop();
+        }
+
+        function toggleMusic() {
+            initAudio();
+            isMuted = !isMuted;
+            musicIcon.textContent = isMuted ? '🔇' : '🎵';
+            if (!isMuted && !musicStarted) startBGM();
+        }
+
+        function playGunshot() {
+            if (!audioCtx) return;
+            const duration = 0.5;
+            const bufferSize = audioCtx.sampleRate * duration;
+            const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+            const data = buffer.getChannelData(0);
+            for (let i = 0; i < bufferSize; i++) data[i] = Math.random() * 2 - 1;
+            const noise = audioCtx.createBufferSource();
+            noise.buffer = buffer;
+            const noiseFilter = audioCtx.createBiquadFilter();
+            noiseFilter.type = 'lowpass';
+            noiseFilter.frequency.setValueAtTime(1200, audioCtx.currentTime);
+            const noiseEnvelope = audioCtx.createGain();
+            noiseEnvelope.gain.setValueAtTime(1, audioCtx.currentTime);
+            noiseEnvelope.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.2);
+            noise.connect(noiseFilter); noiseFilter.connect(noiseEnvelope); noiseEnvelope.connect(audioCtx.destination);
+            const osc = audioCtx.createOscillator();
+            const oscEnvelope = audioCtx.createGain();
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(150, audioCtx.currentTime);
+            oscEnvelope.gain.setValueAtTime(0.8, audioCtx.currentTime);
+            oscEnvelope.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.15);
+            osc.connect(oscEnvelope); oscEnvelope.connect(audioCtx.destination);
+            noise.start(); osc.start();
+            noise.stop(audioCtx.currentTime + duration); osc.stop(audioCtx.currentTime + duration);
+        }
+
+        function playMissSound() {
+            if (!audioCtx) return;
+            const duration = 0.6;
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.type = 'sawtooth';
+            osc.frequency.setValueAtTime(200, audioCtx.currentTime);
+            osc.frequency.linearRampToValueAtTime(50, audioCtx.currentTime + duration);
+            gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
+            gain.gain.linearRampToValueAtTime(0, audioCtx.currentTime + duration);
             osc.connect(gain); gain.connect(audioCtx.destination);
-            osc.start(time); osc.stop(time + dur);
+            osc.start(); osc.stop(audioCtx.currentTime + duration);
         }
 
-        scheduler();
-    }
+        function showPopup(text, type, centered = false) {
+            if (!currentDuck && !centered) return;
+            const popup = document.createElement('div');
+            popup.className = `popup-text ${type === 'bang' ? 'bang-style' : 'taunt-style'}`;
+            popup.textContent = text;
 
-    function startGame() {
-        initAudio();
-        startScreen.classList.add('hidden');
-        gameActive = true;
-        spawn();
-        gameLoop();
-    }
-
-    function toggleMusic() {
-        initAudio();
-        isMuted = !isMuted;
-        musicIcon.textContent = isMuted ? '🔇' : '🎵';
-        if (!isMuted && !musicStarted) startBGM();
-    }
-
-    function playGunshot() {
-        if (!audioCtx) return;
-        const duration = 0.5;
-        const bufferSize = audioCtx.sampleRate * duration;
-        const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
-        const data = buffer.getChannelData(0);
-        for (let i = 0; i < bufferSize; i++) data[i] = Math.random() * 2 - 1;
-        const noise = audioCtx.createBufferSource();
-        noise.buffer = buffer;
-        const noiseFilter = audioCtx.createBiquadFilter();
-        noiseFilter.type = 'lowpass';
-        noiseFilter.frequency.setValueAtTime(1200, audioCtx.currentTime);
-        const noiseEnvelope = audioCtx.createGain();
-        noiseEnvelope.gain.setValueAtTime(1, audioCtx.currentTime);
-        noiseEnvelope.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.2);
-        noise.connect(noiseFilter); noiseFilter.connect(noiseEnvelope); noiseEnvelope.connect(audioCtx.destination);
-        const osc = audioCtx.createOscillator();
-        const oscEnvelope = audioCtx.createGain();
-        osc.type = 'sine';
-        osc.frequency.setValueAtTime(150, audioCtx.currentTime);
-        oscEnvelope.gain.setValueAtTime(0.8, audioCtx.currentTime);
-        oscEnvelope.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.15);
-        osc.connect(oscEnvelope); oscEnvelope.connect(audioCtx.destination);
-        noise.start(); osc.start();
-        noise.stop(audioCtx.currentTime + duration); osc.stop(audioCtx.currentTime + duration);
-    }
-
-    function playMissSound() {
-        if (!audioCtx) return;
-        const duration = 0.6;
-        const osc = audioCtx.createOscillator();
-        const gain = audioCtx.createGain();
-        osc.type = 'square';
-        osc.frequency.setValueAtTime(400, audioCtx.currentTime);
-        osc.frequency.exponentialRampToValueAtTime(100, audioCtx.currentTime + duration);
-        gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
-        gain.gain.linearRampToValueAtTime(0, audioCtx.currentTime + duration);
-        osc.connect(gain); gain.connect(audioCtx.destination);
-        osc.start(); osc.stop(audioCtx.currentTime + duration);
-    }
-
-    function showPopup(text, type) {
-        if (!currentDuck) return;
-        const popup = document.createElement('div');
-        popup.className = `popup-text ${type === 'bang' ? 'bang-style' : 'taunt-style'}`;
-        popup.textContent = text;
-        popup.style.left = (posX + 20) + 'px';
-        popup.style.top = (parseFloat(currentDuck.style.top) - 40) + 'px';
-        gallery.appendChild(popup);
-        setTimeout(() => popup.remove(), 1500);
-    }
-
-    function cycleDifficulty() {
-        initAudio();
-        const modes = ['easy', 'normal', 'hard'];
-        const nextIdx = (modes.indexOf(difficultyState) + 1) % modes.length;
-        difficultyState = modes[nextIdx];
-
-        const config = {
-            easy: { icon: '👶', text: 'EASY', color: 'border-black' },
-            normal: { icon: '😊', text: 'NORMAL', color: 'border-blue-500' },
-            hard: { icon: '🔥', text: 'HARD', color: 'border-red-600' }
-        };
-
-        diffIcon.textContent = config[difficultyState].icon;
-        diffText.textContent = config[difficultyState].text;
-        document.getElementById('diff-cycle-btn').className = `icon-btn bg-white px-4 py-2 rounded-xl border-4 ${config[difficultyState].color} flex items-center gap-2 shadow-xl min-w-[120px]`;
-
-        if (isMoving && !isDashing) {
-            updateSpeed();
-        }
-    }
-
-    function updateSpeed() {
-        if (difficultyState === 'easy') speed = 0.8 + Math.random() * 0.4;
-        else if (difficultyState === 'normal') speed = 1.8 + Math.random() * 1.0;
-        else speed = 5.0 + Math.random() * 2.0;
-    }
-
-    function generateProblem() {
-        const table = tableSelect.value;
-        let a, b;
-
-        if (table === 'all') {
-            a = Math.floor(Math.random() * 11) + 2; // 2-12
-        } else {
-            a = parseInt(table);
-        }
-
-        b = Math.floor(Math.random() * 12) + 1; // 1-12
-
-        // Randomly swap a and b for variety if "all" is selected
-        if (table === 'all' && Math.random() > 0.5) {
-            [a, b] = [b, a];
-        }
-
-        const ans = a * b;
-        currentAnswer = ans;
-
-        let options = new Set([ans]);
-        while (options.size < 4) {
-            // Generate plausible wrong answers
-            let wrong;
-            const r = Math.random();
-            if (r < 0.4) {
-                // Off by one multiplier
-                wrong = a * (b + (Math.random() > 0.5 ? 1 : -1));
-            } else if (r < 0.7) {
-                // Off by one table
-                wrong = (a + (Math.random() > 0.5 ? 1 : -1)) * b;
+            if (centered) {
+                const offsetX = (Math.random() - 0.5) * 100;
+                const offsetY = (Math.random() - 0.5) * 60;
+                popup.style.left = `calc(50% + ${offsetX}px)`;
+                popup.style.top = `calc(40% + ${offsetY}px)`;
+                popup.style.transform = 'translate(-50%, -50%)';
             } else {
-                // Random nearby value
-                wrong = ans + (Math.floor(Math.random() * 10) - 5);
+                popup.style.left = (posX + 20) + 'px';
+                popup.style.top = (parseFloat(currentDuck.style.top) - 40) + 'px';
             }
 
-            if (wrong > 0 && !options.has(wrong)) options.add(wrong);
+            gallery.appendChild(popup);
+            setTimeout(() => popup.remove(), 1500);
         }
 
-        const shuffled = Array.from(options).sort(() => Math.random() - 0.5);
-        buttons.forEach((btn, i) => {
-            btn.textContent = shuffled[i];
-            btn.disabled = false;
-            btn.classList.remove('bg-red-600');
-        });
+        function cycleDifficulty() {
+            initAudio();
+            const modes = ['easy', 'normal', 'hard'];
+            const nextIdx = (modes.indexOf(difficultyState) + 1) % modes.length;
+            difficultyState = modes[nextIdx];
 
-        return `${a} × ${b}`;
-    }
+            const config = {
+                easy: { icon: '👶', text: 'EASY', color: 'border-black' },
+                normal: { icon: '😊', text: 'NORMAL', color: 'border-blue-500' },
+                hard: { icon: '🔥', text: 'HARD', color: 'border-red-600' }
+            };
 
-    function createDuck(problemText) {
-        const wrapper = document.createElement('div');
-        wrapper.className = 'duck-target';
-        direction = Math.random() > 0.5 ? 1 : -1;
-        const buffer = difficultyState === 'easy' ? 100 : 250;
-        posX = direction === 1 ? -buffer : window.innerWidth + buffer;
-        updateSpeed();
-        isDashing = false;
+            diffIcon.textContent = config[difficultyState].icon;
+            diffText.textContent = config[difficultyState].text;
+            document.getElementById('diff-cycle-btn').className = `icon-btn bg-white px-4 py-2 rounded-xl border-4 ${config[difficultyState].color} flex items-center gap-2 shadow-xl min-w-[120px]`;
 
-        const sign = document.createElement('div');
-        sign.className = 'problem-sign';
-        sign.textContent = problemText;
+            if (isMoving && !isDashing) {
+                updateSpeed();
+            }
+        }
 
-        const bodyContainer = document.createElement('div');
-        bodyContainer.className = 'duck-body-container';
-        bodyContainer.style.transform = `scaleX(${direction})`;
-        bodyContainer.innerHTML = `
+        function updateSpeed() {
+            if (difficultyState === 'easy') speed = 0.8 + Math.random() * 0.4;
+            else if (difficultyState === 'normal') speed = 1.8 + Math.random() * 1.0;
+            else speed = 5.0 + Math.random() * 2.0;
+        }
+
+        function generateProblem() {
+            const table = tableSelect.value;
+            let a, b;
+
+            if (table === 'all') {
+                a = Math.floor(Math.random() * 11) + 2; // 2-12
+            } else {
+                a = parseInt(table);
+            }
+
+            b = Math.floor(Math.random() * 12) + 1; // 1-12
+
+            // Randomly swap a and b for variety if "all" is selected
+            if (table === 'all' && Math.random() > 0.5) {
+                [a, b] = [b, a];
+            }
+
+            const ans = a * b;
+            currentAnswer = ans;
+
+            let options = new Set([ans]);
+            while (options.size < 4) {
+                // Generate plausible wrong answers
+                let wrong;
+                const r = Math.random();
+                if (r < 0.4) {
+                    // Off by one multiplier
+                    wrong = a * (b + (Math.random() > 0.5 ? 1 : -1));
+                } else if (r < 0.7) {
+                    // Off by one table
+                    wrong = (a + (Math.random() > 0.5 ? 1 : -1)) * b;
+                } else {
+                    // Random nearby value
+                    wrong = ans + (Math.floor(Math.random() * 10) - 5);
+                }
+
+                if (wrong > 0 && !options.has(wrong)) options.add(wrong);
+            }
+
+            const shuffled = Array.from(options).sort(() => Math.random() - 0.5);
+            buttons.forEach((btn, i) => {
+                btn.textContent = shuffled[i];
+                btn.disabled = false;
+                btn.classList.remove('bg-red-600');
+            });
+
+            return `${a} × ${b}`;
+        }
+
+        function createDuck(problemText) {
+            const wrapper = document.createElement('div');
+            wrapper.className = 'duck-target';
+            direction = Math.random() > 0.5 ? 1 : -1;
+            const buffer = difficultyState === 'easy' ? 100 : 250;
+            posX = direction === 1 ? -buffer : window.innerWidth + buffer;
+            updateSpeed();
+            isDashing = false;
+
+            const sign = document.createElement('div');
+            sign.className = 'problem-sign';
+            sign.textContent = problemText;
+
+            const bodyContainer = document.createElement('div');
+            bodyContainer.className = 'duck-body-container';
+            bodyContainer.style.transform = `scaleX(${direction})`;
+            bodyContainer.innerHTML = `
             <svg viewBox="0 0 100 100" width="100%" height="100%">
                 <path d="M20,60 Q20,30 50,30 Q80,30 80,60 Q80,80 50,80 Q20,80 20,60" fill="#ffb703" stroke="#000" stroke-width="4"/>
                 <circle cx="65" cy="50" r="5" fill="black" />
@@ -560,108 +661,202 @@
             </svg>
         `;
 
-        wrapper.appendChild(sign);
-        wrapper.appendChild(bodyContainer);
-        gallery.appendChild(wrapper);
+            wrapper.appendChild(sign);
+            wrapper.appendChild(bodyContainer);
+            gallery.appendChild(wrapper);
 
-        const minTop = 80;
-        const maxTop = gallery.offsetHeight - 140;
-        const actualTop = minTop + Math.random() * (maxTop - minTop);
-        wrapper.style.top = actualTop + 'px';
-        wrapper.style.left = posX + 'px';
-        return wrapper;
-    }
-
-    function spawn() {
-        if (currentDuck) currentDuck.remove();
-        if (round > 10) {
-            finishGame();
-            return;
+            const minTop = 80;
+            const maxTop = gallery.offsetHeight - 140;
+            const actualTop = minTop + Math.random() * (maxTop - minTop);
+            wrapper.style.top = actualTop + 'px';
+            wrapper.style.left = posX + 'px';
+            return wrapper;
         }
-        const problem = generateProblem();
-        currentDuck = createDuck(problem);
-        isMoving = true;
-    }
 
-    function checkAnswer(btn) {
-        if (!isMoving || !gameActive || isDashing) return;
-        initAudio();
-        if (parseInt(btn.textContent) === currentAnswer) {
-            playGunshot();
-            flashEl.style.animation = 'none';
-            void flashEl.offsetWidth;
-            flashEl.style.animation = 'flash-anim 0.15s forwards';
-            showPopup('BANG!', 'bang');
-            isMoving = false;
-            score++;
-            scoreEl.textContent = score;
-            currentDuck.classList.add('duck-hit');
-            setTimeout(() => { round++; spawn(); }, 1200);
-        } else {
-            playMissSound();
-            isDashing = true;
-            speed = 22;
-            currentDuck.classList.add('duck-happy');
-            btn.classList.add('bg-red-600');
-            const taunt = taunts[Math.floor(Math.random() * taunts.length)];
-            showPopup(taunt, 'taunt');
-            buttons.forEach(b => b.disabled = true);
+        function spawn() {
+            if (currentDuck) currentDuck.remove();
+            if (round > 10) {
+                finishGame();
+                return;
+            }
+            const problem = generateProblem();
+            currentDuck = createDuck(problem);
+            isMoving = true;
         }
-    }
 
-    function finishGame() {
-        gameActive = false;
-        isMoving = false;
-        document.getElementById('final-score').textContent = score;
-        endScreen.classList.remove('hidden');
-    }
-
-    function resetGame() {
-        if (currentDuck) currentDuck.remove();
-        score = 0;
-        round = 1;
-        scoreEl.textContent = '0';
-        isMoving = false;
-        isDashing = false;
-        if (gameActive) {
-            spawn();
-        }
-    }
-
-    function restart() {
-        initAudio();
-        score = 0; round = 1;
-        scoreEl.textContent = '0';
-        endScreen.classList.add('hidden');
-        gameActive = true;
-        spawn();
-    }
-
-    function gameLoop() {
-        if (isMoving && currentDuck && gameActive) {
-            posX += speed * direction;
-            currentDuck.style.left = posX + 'px';
-            const buffer = 300;
-            if ((direction === 1 && posX > window.innerWidth + buffer) ||
-                (direction === -1 && posX < -buffer)) {
+        function checkAnswer(btn) {
+            if (!isMoving || !gameActive || isDashing) return;
+            initAudio();
+            if (parseInt(btn.textContent) === currentAnswer) {
+                playGunshot();
+                flashEl.style.animation = 'none';
+                void flashEl.offsetWidth;
+                flashEl.style.animation = 'flash-anim 0.15s forwards';
+                showPopup('BANG!', 'bang');
                 isMoving = false;
-                round++;
+                score++;
+                scoreEl.textContent = score;
+                currentDuck.classList.add('duck-hit');
+                setTimeout(() => { round++; spawn(); }, 1200);
+            } else {
+                playMissSound();
+                isDashing = true;
+                speed = 22;
+                currentDuck.classList.add('duck-happy');
+                btn.classList.add('bg-red-600');
+                const taunt = taunts[Math.floor(Math.random() * taunts.length)];
+                showPopup(taunt, 'taunt', true);
+                buttons.forEach(b => b.disabled = true);
+            }
+        }
+
+        function finishGame() {
+            gameActive = false;
+            isMoving = false;
+            document.getElementById('final-score').textContent = score;
+            endScreen.classList.remove('hidden');
+
+            stopBGM(); // Stop background music
+
+            if (score >= 8) {
+                playWinSound();
+                startFireworks();
+            } else {
+                playLoseSound();
+            }
+        }
+
+        function resetGame() {
+            stopFireworks();
+            if (currentDuck) currentDuck.remove();
+            score = 0;
+            round = 1;
+            scoreEl.textContent = '0';
+            isMoving = false;
+            isDashing = false;
+            if (gameActive) {
                 spawn();
             }
         }
-        requestAnimationFrame(gameLoop);
-    }
 
-    document.addEventListener('touchstart', (e) => {
-        const tag = e.target.tagName;
-        if (tag !== 'BUTTON' && !e.target.closest('.icon-btn') && tag !== 'SELECT') e.preventDefault();
-        initAudio();
-    }, { passive: false });
+        function restart() {
+            stopFireworks();
+            initAudio();
+            score = 0; round = 1;
+            scoreEl.textContent = '0';
+            endScreen.classList.add('hidden');
+            gameActive = true;
+            spawn();
+        }
 
-    // Initial check for audio activation
-    document.addEventListener('click', initAudio, { once: true });
-</script>
+        function gameLoop() {
+            if (isMoving && currentDuck && gameActive) {
+                posX += speed * direction;
+                currentDuck.style.left = posX + 'px';
+                const buffer = 300;
+                if ((direction === 1 && posX > window.innerWidth + buffer) ||
+                    (direction === -1 && posX < -buffer)) {
+                    isMoving = false;
+                    round++;
+                    spawn();
+                }
+            }
+            requestAnimationFrame(gameLoop);
+        }
+
+        document.addEventListener('touchstart', (e) => {
+            const tag = e.target.tagName;
+            if (tag !== 'BUTTON' && !e.target.closest('.icon-btn') && tag !== 'SELECT') e.preventDefault();
+            initAudio();
+        }, { passive: false });
+
+        // Initial check for audio activation
+        document.addEventListener('click', initAudio, { once: true });
+
+        // --- Fireworks Logic ---
+        let fireworkRequest = null;
+        const fwCanvas = document.getElementById('fireworks-canvas');
+        const fwCtx = fwCanvas.getContext('2d');
+        let particles = [];
+
+        function resizeFireworks() {
+            fwCanvas.width = gallery.offsetWidth;
+            fwCanvas.height = gallery.offsetHeight;
+        }
+        window.addEventListener('resize', resizeFireworks);
+        resizeFireworks();
+
+        function createFirework(x, y) {
+            const particleCount = 80;
+            const color = `hsl(${Math.random() * 360}, 100%, 50%)`;
+            for (let i = 0; i < particleCount; i++) {
+                particles.push({
+                    x: x,
+                    y: y,
+                    angle: Math.random() * Math.PI * 2,
+                    speed: Math.random() * 6 + 2,
+                    radius: Math.random() * 3 + 1,
+                    color: color,
+                    alpha: 1,
+                    decay: 0.01 + Math.random() * 0.02
+                });
+            }
+        }
+
+        function updateFireworks() {
+            fwCtx.clearRect(0, 0, fwCanvas.width, fwCanvas.height);
+
+            // Occasional random launch
+            if (Math.random() < 0.05) {
+                createFirework(
+                    Math.random() * fwCanvas.width,
+                    Math.random() * fwCanvas.height * 0.5
+                );
+            }
+
+            for (let i = particles.length - 1; i >= 0; i--) {
+                const p = particles[i];
+                p.x += Math.cos(p.angle) * p.speed;
+                p.y += Math.sin(p.angle) * p.speed;
+                p.y += 2; // gravity
+                p.alpha -= p.decay;
+
+                if (p.alpha <= 0) {
+                    particles.splice(i, 1);
+                    continue;
+                }
+
+                fwCtx.globalAlpha = p.alpha;
+                fwCtx.beginPath();
+                fwCtx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+                fwCtx.fillStyle = p.color;
+                fwCtx.fill();
+            }
+
+            fwCtx.globalAlpha = 1;
+
+            if (gameActive === false && !endScreen.classList.contains('hidden')) {
+                fireworkRequest = requestAnimationFrame(updateFireworks);
+            }
+        }
+
+        function startFireworks() {
+            if (fireworkRequest) return;
+            particles = [];
+            updateFireworks();
+            resizeFireworks();
+        }
+
+        function stopFireworks() {
+            if (fireworkRequest) {
+                cancelAnimationFrame(fireworkRequest);
+                fireworkRequest = null;
+            }
+            fwCtx.clearRect(0, 0, fwCanvas.width, fwCanvas.height);
+            particles = [];
+        }
+    </script>
 
 </body>
-</html>
 
+</html>
